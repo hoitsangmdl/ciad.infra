@@ -38,9 +38,9 @@
 - hosts: elk
   sudo: yes
   roles:
-#    - { role: common, use_proxy: False }
-#    - yum
+    - { role: common, use_proxy: False }
+    - yum
     - { role: monitored, include_host: nagios }
-#    - openjdk
-#    - elk
-#    - nagios
+    - openjdk
+    - elk
+    - nagios
