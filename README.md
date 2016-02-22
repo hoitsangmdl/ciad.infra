@@ -109,7 +109,7 @@ The VMs in the toolchain have dependencies. They need to be started in the follo
     vagrant provision oracle artifactory nagios elk
 
     # visit http://nagios/nagios
-    # visit http://elk:5602/
+    # visit http://elk:5601/
 
     # 6. setup jira bitbucket jenkins
     vagrant up jira bitbucket jenkins
@@ -138,7 +138,7 @@ The VMs in the toolchain have dependencies. They need to be started in the follo
     vagrant provision oracle elk
 
     # visit http://nagios/nagios
-    # visit http://elk:5602/
+    # visit http://elk:5601/
 
     # 6. setup jira bitbucket jenkins
     vagrant up jira jenkins
