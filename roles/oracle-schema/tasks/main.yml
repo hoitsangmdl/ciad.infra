@@ -1,15 +1,15 @@
 ---
 
   - name: copy oracle tablespace sql script
-    template: src=templates/tablespace.sql.j2 dest=/tmp/{{ schema_name }}_tablespace.sql owner=oracle group=dba mode=0500
+    template: src=tablespace.sql.j2 dest=/tmp/{{ schema_name }}_tablespace.sql owner=oracle group=dba mode=0500
     register: test_tablespace_sql_script
 
   - name: copy oracle role sql script
-    template: src=templates/role.sql.j2 dest=/tmp/{{ schema_name }}_role.sql owner=oracle group=dba mode=0500
+    template: src=role.sql.j2 dest=/tmp/{{ schema_name }}_role.sql owner=oracle group=dba mode=0500
     register: test_role_sql_script
 
   - name: copy oracle role sql script
-    template: src=templates/schema.sql.j2 dest=/tmp/{{ schema_name }}_user.sql owner=oracle group=dba mode=0500
+    template: src=schema.sql.j2 dest=/tmp/{{ schema_name }}_user.sql owner=oracle group=dba mode=0500
     register: test_schema_sql_script
 
 
