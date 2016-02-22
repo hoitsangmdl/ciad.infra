@@ -178,14 +178,15 @@ After that, in the same shell, run the following command:
 
 After this step, visit generated artifacts:
 
-***1. Bitbucket: http://bitbucket:7990/projects/HOIA***
-***2. Jira: http://jira:8080/HOIA/***
-***3. Jenkins: http://jenkins:8080/job/HOIA-helloworld-snapshot-build/***
+    1. Bitbucket: http://bitbucket:7990/projects/HOIA
+    2. Jira: http://jira:8080/HOIA/
+    3. Jenkins: http://jenkins:8080/job/HOIA-helloworld-snapshot-build/
 
 **2. Run Sample project build job**
 
 In Jenkins, manually build the project:
-***http://jenkins:8080/job/HOIA-helloworld-snapshot-build/***
+
+    http://jenkins:8080/job/HOIA-helloworld-snapshot-build/
 
 **3. Startup Dev runtime (Tomcat)**
 
@@ -198,6 +199,6 @@ Visit: http://tomcat:8080/HelloWorld, you should see 404 page not found.
 
 **4. Run Sample Project deploy job**
 
-1. Jenkins: http://jenkins:8080/job/HOIA-helloworld-snapshot-deploy/
+    Jenkins: http://jenkins:8080/job/HOIA-helloworld-snapshot-deploy/
 
 After the deployment is completed, visit http://tomcat:8080/HelloWorld, you should see Helloworld page.
