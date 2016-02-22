@@ -12,12 +12,13 @@ The CICD toolchain includes:
 
 The database serve as backend for JIRA, BitBucket, and Artifactory. The Proxy server mimic a corporate environment (not enable by default). Sample project templates also included.
 
-There are also 2 Vagrantfile:
+There are also 2 Vagrantfile, and please use a symlink to shortcut into the proper Vagrantfile as selection.
+By defailt it is set to Vagrantfile.compact.
 
     1. Vagrantfile.master - 7 VMs (oracle, artifactory, jira, bitbucket, elk, nagios, jenkins)
     2. Vagrantfile.compact - 4 VMs (oracle + artifactory, jira + bitbucket, elk + nagios, jenkins)
 
-Use a symlink to shortcut into the proper Vagrantfile as selection.
+Please also be aware that:
 
     1. Default login for all system: admin/password
     2. Ensure the Project Template is "public readable" (under 'Register Project Templates') step
