@@ -4,22 +4,23 @@ Overview
 This is a concept reference implementation for automating CICD toolchain setup, and cookie-cutting a working sample application plus related CICD tasks. It's written with ansible, python, and vagrant.
 
 The CICD toolchain includes:
-1. JIRA, BitBucket, Artifactory, and Jenkins.
-2. OracleXE database and Proxy (squid) server.
-3. Elasticsearch, Logstash, Collectd, and Nagios for reporting and monitoring.
-4. Tomcat - just a sample web container to run helloworld from sample code
+
+**1. JIRA, BitBucket, Artifactory, and Jenkins.**
+**2. OracleXE database and Proxy (squid) server.**
+**3. Elasticsearch, Logstash, Collectd, and Nagios for reporting and monitoring.**
+**4. Tomcat - just a sample web container to run helloworld from sample code**
 
 The database serve as backend for JIRA, BitBucket, and Artifactory. The Proxy server mimic a corporate environment (not enable by default). Sample project templates also included.
 
 There are also 2 Vagrantfile:
 
-1. Vagrantfile.master - 7 VMs (oracle, artifactory, jira, bitbucket, elk, nagios, jenkins)
-2. Vagrantfile.compact - 4 VMs (oracle + artifactory, jira + bitbucket, elk + nagios, jenkins)
+**1. Vagrantfile.master - 7 VMs (oracle, artifactory, jira, bitbucket, elk, nagios, jenkins)**
+**2. Vagrantfile.compact - 4 VMs (oracle + artifactory, jira + bitbucket, elk + nagios, jenkins)**
 
 Use a symlink to shortcut into the proper Vagrantfile as selection.
 
-**Default login for all system: admin/password**
-**Ensure the Project Template is "public readable" (under 'Register Project Templates') step**
+**1. Default login for all system: admin/password**
+**2. Ensure the Project Template is "public readable" (under 'Register Project Templates') step**
 
 1. Setup
 -----
