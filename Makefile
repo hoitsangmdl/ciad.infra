@@ -9,8 +9,13 @@ setup:
 restartvb:
 	sudo /Library/Application\ Support/VirtualBox/LaunchDaemons/VirtualBoxStartup.sh restart
 
+local_repo:
+	export ANSIBLE_HOST_KEY_CHECKING=false && \
+	ansible-playbook compact.yml \
+	-i ./.vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory --tags local_repo
 
 monitored:
+	export ANSIBLE_HOST_KEY_CHECKING=false && \
 	ansible-playbook compact.yml \
         -i ./.vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory --tags monitored
 

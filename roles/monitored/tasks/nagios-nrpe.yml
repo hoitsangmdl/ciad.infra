@@ -67,6 +67,7 @@
     tags: monitored
 
   - set_fact: host_name="{{ansible_hostname}}"
+    tags: monitored
 
   - name: Copy host specific nrpe config file if exist
     delegate_to: nagios
