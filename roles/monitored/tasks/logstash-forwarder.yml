@@ -47,6 +47,7 @@
   - debug: var=logstash_install_result
 
   - set_fact: logstash_installed="{{ logstash_install_result.changed }}"
+    tags: monitored
 
   - name: Fetch cert file from elk server
     delegate_to: elk
