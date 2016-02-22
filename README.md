@@ -46,7 +46,7 @@ You will need to download [OracleXE database](http://technet.oracle.com), and pl
 
 Please ensure you have **pip** and **virtualenv** installed. If unsure, please run the following to install pip and virtualenv:
 
-    make pyaddon
+    sudo make pyaddon
 
 To start after checkout the application, run the following to setup **virtualenv** and install required python dependencies:
 

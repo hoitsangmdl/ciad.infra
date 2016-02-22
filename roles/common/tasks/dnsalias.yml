@@ -2,16 +2,16 @@
 
   - name: ensure these entries exists in etc-hosts
     lineinfile:
-      line={{ item }}
+      line="{{ item }}"
       state=present
       dest=/etc/hosts
     with_items:
-      - "192.168.100.11   proxy"
-      - "192.168.100.12   oracle"
-      - "192.168.100.12   artifactory"
-      - "192.168.100.15   bitbucket"
-      - "192.168.100.15   jira"
-      - "192.168.100.16   jenkins"
-      - "192.168.100.17   elk"
-      - "192.168.100.17   nagios"
-      - "192.168.100.50   tomcat"
+      - '192.168.100.11   proxy'
+      - '192.168.100.12   oracle'
+      - '192.168.100.12   artifactory'
+      - '192.168.100.15   bitbucket'
+      - '192.168.100.15   jira'
+      - '192.168.100.16   jenkins'
+      - '192.168.100.17   elk'
+      - '192.168.100.17   nagios'
+      - '192.168.100.50   tomcat'
