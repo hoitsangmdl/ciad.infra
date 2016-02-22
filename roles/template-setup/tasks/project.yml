@@ -26,6 +26,7 @@
         git config user.email "jenkins@localhost" &&
         git remote add origin ssh://git@{{scm_host}}:{{scm_port}}/scm/{{project_key|lower}}/{{item}}.git &&
         git add --all &&
+        git commit -m "initial commit" &&
         git push origin master'
     with_items: "{{project_template_names}}"
     when: commit_git
