@@ -132,7 +132,7 @@
 
   - name: transfer .m2/settings.xml
     template:
-      src=templates/settings.xml.j2
+      src=settings.xml.j2
       dest=~jenkins/.m2/settings.xml
       owner=jenkins
       group=jenkins
