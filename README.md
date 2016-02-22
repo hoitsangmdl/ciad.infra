@@ -57,8 +57,6 @@ To start after checkout the application, run the following to setup **virtualenv
 
 Some of the playbook require API interaction from local machine to the VM. The following DNS alias entries are required:
 
-For vagrantfile.master, please add the following entries into /etc/hosts
-
     192.168.100.11   proxy
     192.168.100.12   oracle
     192.168.100.13   artifactory
@@ -67,19 +65,7 @@ For vagrantfile.master, please add the following entries into /etc/hosts
     192.168.100.16   jenkins
     192.168.100.17   elk
     192.168.100.18   nagios
-    192.168.100.50	 tomcat
-
-For Vagrantfile.compact, please add the following entries into /etc/hosts:
-
-    192.168.100.11   proxy
-    192.168.100.12   oracle
-    192.168.100.12   artifactory
-    192.168.100.15   bitbucket
-    192.168.100.15   jira
-    192.168.100.16   jenkins
-    192.168.100.17   elk
-    192.168.100.17   nagios
-    192.168.100.50	 tomcats
+    192.168.100.50   tomcat
 
 2. Start up
 -----------
