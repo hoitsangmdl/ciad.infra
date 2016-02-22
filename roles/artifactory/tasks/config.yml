@@ -15,17 +15,17 @@
 
   - name: transfer configuration file with backup existing
     template:
-      src=./templates/etc-opt-jfrog-artifactory-default.j2
+      src=etc-opt-jfrog-artifactory-default.j2
       dest=/etc/opt/jfrog/artifactory/default
       backup=yes
 
   - name: transfer jdbc driver
     copy:
-      src=./files/ojdbc6.jar
+      src=ojdbc6.jar
       dest={{artifactory_home}}/tomcat/lib/ojdbc6.jar
 
   - name: transfer over jdbc config with backup existing
     template:
-      src=./templates/oracle.properties.j2
+      src=oracle.properties.j2
       dest={{artifactory_home}}/etc/storage.properties
       backup=yes

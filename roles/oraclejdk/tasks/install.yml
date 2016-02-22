@@ -20,7 +20,7 @@
   # ------------
 
   - name: create /etc/profile.d/jdk.sh
-    template: src=./templates/jdk.sh dest=/etc/profile.d/jdk.sh mode=0644 force=no
+    template: src=jdk.sh dest=/etc/profile.d/jdk.sh mode=0644 force=no
 
   - name: check java version
     shell: /opt/jdk/current/bin/java -version

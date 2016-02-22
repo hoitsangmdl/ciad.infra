@@ -72,7 +72,7 @@
 
   - name: jdbc properties
     template:
-      src=./templates/dbconfig.j2
+      src=dbconfig.j2
       dest={{jira_home}}/dbconfig.xml
       owner={{jira_username}}
 
@@ -83,7 +83,7 @@
 
   - name: jdbc driver
     copy:
-      src=./files/ojdbc6.jar
+      src=ojdbc6.jar
       dest={{jira_home}}/lib/ojdbc6.jar
 
   # =======
@@ -121,7 +121,7 @@
 
   - name: install startup service
     template:
-      src=./templates/jira.service.j2
+      src=jira.service.j2
       dest=/etc/systemd/system/jira.service
       owner=root
       backup=yes

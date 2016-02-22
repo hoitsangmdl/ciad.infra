@@ -95,7 +95,7 @@
 
   - name: jdbc driver
     copy:
-      src=./files/ojdbc6.jar
+      src=ojdbc6.jar
       dest={{bitbucket_home}}/lib/ojdbc6.jar
 
   # =======
@@ -130,7 +130,7 @@
 
   - name: install startup service
     copy:
-      src=./files/bitbucket.service
+      src=bitbucket.service
       dest=/etc/systemd/system/bitbucket.service
       owner=root
       mode=755
