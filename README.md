@@ -79,7 +79,7 @@ For Vagrantfile.compact, please add the following entries into /etc/hosts:
     192.168.100.16   jenkins
     192.168.100.17   elk
     192.168.100.17   nagios
-    192.168.100.50	 tomcats
+    192.168.100.50	 tomcat
 
 2. Start up
 -----------
