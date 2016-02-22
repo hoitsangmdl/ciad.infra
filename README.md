@@ -34,9 +34,9 @@ To run this RI, please ensure you have 16gb ram and 100gb disk space. The follow
 
 **2. Vagrant Image**
 
-Please also ensure you have CentOS7 vagrant box installed. This RI is built with [this](http://cloud.centos.org/centos/7/vagrant/x86_64/images/CentOS-7-Vagrant-1509-x86_64-01.box) image. Other CentOS7 base image should work.
+Please also ensure you have CentOS7 vagrant box installed. This RI is built with hashicorp centos7 image. Other CentOS7 base image should work.
 
-    vagrant add centos7.0 {image url}
+    vagrant add centos7.0 http://cloud.centos.org/centos/7/vagrant/x86_64/images/CentOS-7-Vagrant-1505-x86_64-01.box
 
 **3. OracleXE rpm**
 
