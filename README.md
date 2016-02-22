@@ -5,10 +5,10 @@ This is a concept reference implementation for automating CICD toolchain setup, 
 
 The CICD toolchain includes:
 
-**1. JIRA, BitBucket, Artifactory, and Jenkins.**
-**2. OracleXE database and Proxy (squid) server.**
-**3. Elasticsearch, Logstash, Collectd, and Nagios for reporting and monitoring.**
-**4. Tomcat - just a sample web container to run helloworld from sample code**
+    **1. JIRA, BitBucket, Artifactory, and Jenkins.**
+    **2. OracleXE database and Proxy (squid) server.**
+    **3. Elasticsearch, Logstash, Collectd, and Nagios for reporting and monitoring.**
+    **4. Tomcat - just a sample web container to run helloworld from sample code**
 
 The database serve as backend for JIRA, BitBucket, and Artifactory. The Proxy server mimic a corporate environment (not enable by default). Sample project templates also included.
 
