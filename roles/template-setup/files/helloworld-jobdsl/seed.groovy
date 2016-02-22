@@ -29,7 +29,7 @@ freeStyleJob('{{project_key}}-{{repo_name|lower}}-snapshot-deploy') {
     }
     label('master')
     steps {
-      shell('./deploy.sh')
+      shell('chmod +x ./deploy.sh && ./deploy.sh')
     }
 }
 
