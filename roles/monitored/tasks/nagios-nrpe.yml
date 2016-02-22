@@ -69,7 +69,7 @@
 #    when: nagios_up and nrpe_installed
     when: nagios_up
     register: host_specific_nrpe
-    ignore_errors: True
+    ignore_errors: yes
 
   - name: Copy nrpe check config to nagios host
     delegate_to: nagios
@@ -88,7 +88,8 @@
       src={{ include_host }}.cfg.j2
       dest=/etc/nagios/conf.d/{{ include_host }}.cfg
     when: nagios_up and include_host is defined
-    ignore_errors: True
+    register: include_host_cfg
+    ignore_errors: yes
 
   - name: restart start nrpe service
     service:
