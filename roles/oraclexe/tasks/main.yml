@@ -26,3 +26,4 @@
 
   - include: oracle-xe-test.yml
     when: oracle-xe-test
+  - file: path=/tmp/oracle-xe-11.2.0-1.0.x86_64.rpm state=absent
