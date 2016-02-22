@@ -11,7 +11,7 @@
     register: cmd_java_ver
 
   - name: create /etc/profile.d/jdk.sh
-    template: src=./templates/jdk.sh dest=/etc/profile.d/jdk.sh mode=0644
+    template: src=jdk.sh dest=/etc/profile.d/jdk.sh mode=0644
 
 #  - assert:
 #      that:
