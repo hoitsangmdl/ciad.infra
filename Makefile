@@ -2,7 +2,7 @@ pyaddon:
 	easy_install pip==1.2 && pip install virtualenv
 
 setup:
-	virtualenv env && . env/bin/activate && pip install ansible==1.9.4 requests bitbucket-api jenkinsapi
+	virtualenv env && . env/bin/activate && pip install ansible==2.0.0.2 requests bitbucket-api jenkinsapi
 	git clone https://github.com/pycontribs/jira.git
 	. env/bin/activate && cd jira && python setup.py install
 
