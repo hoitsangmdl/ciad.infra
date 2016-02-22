@@ -10,7 +10,7 @@
   - name: synchronize project templates
     delegate_to: jenkins
     copy:
-      src=files/{{ item }}/
+      src={{ item }}/
       dest=/tmp/{{ project_key }}/{{ item }}
     with_items: "{{ project_template_names }}"
 
