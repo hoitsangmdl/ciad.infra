@@ -1,0 +1,26 @@
+---
+
+  #===============
+  # /root/.curlrc
+  # --------------
+
+  - name: setup proxy for curl
+    lineinfile:
+      dest="~/.curlrc"
+      line="{{item.line}}"
+      regexp="{{item.regex}}"
+      create=True
+    with_items:
+      - {line: "proxy={{proxy_host}}:{{proxy_port}}", regex: "^proxy=.*"}
+      - {line: "noproxy=localhost,127.0.0.0/8,127.0.1.1,127.0.1.1*,local.home,artifactory", regex: "^noproxy=.*"}
+    when: use_proxy|bool
+
+  - name: disable curl proxy
+    lineinfile:
+      dest="~/.curlrc"
+      regexp="{{item.regex}}"
+      state="{{item.state}}"
+    with_items:
+      - {regex: "^proxy=.*", state: "absent"}
+      - {regex: "^noproxy=.*", state: "absent"}
+    when: not use_proxy|bool

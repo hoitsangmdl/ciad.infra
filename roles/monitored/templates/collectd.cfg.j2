@@ -1,0 +1,13 @@
+Hostname "{{ ansible_hostname }}"
+FQDNLookup false
+
+LoadPlugin cpu
+LoadPlugin df
+LoadPlugin interface
+LoadPlugin network
+<Plugin network>
+  Server "elk" "25826"
+</Plugin>
+LoadPlugin memory
+LoadPlugin syslog
+LoadPlugin swap

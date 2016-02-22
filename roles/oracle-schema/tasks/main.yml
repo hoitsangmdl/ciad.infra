@@ -1,0 +1,35 @@
+---
+
+  - name: copy oracle tablespace sql script
+    template: src=templates/tablespace.sql.j2 dest=/tmp/{{ schema_name }}_tablespace.sql owner=oracle group=dba mode=0500
+    register: test_tablespace_sql_script
+
+  - name: copy oracle role sql script
+    template: src=templates/role.sql.j2 dest=/tmp/{{ schema_name }}_role.sql owner=oracle group=dba mode=0500
+    register: test_role_sql_script
+
+  - name: copy oracle role sql script
+    template: src=templates/schema.sql.j2 dest=/tmp/{{ schema_name }}_user.sql owner=oracle group=dba mode=0500
+    register: test_schema_sql_script
+
+
+  - name: create tablespace
+    shell: >
+      source ~oracle/.bashrc && \
+        sqlplus sys/{{ oracle_system_pwd }} as sysdba < /tmp/{{ schema_name }}_tablespace.sql
+    sudo_user: oracle
+    when: test_tablespace_sql_script|changed
+
+  - name: create role
+    shell: >
+      source ~oracle/.bashrc && \
+        sqlplus sys/{{ oracle_system_pwd }} as sysdba < /tmp/{{ schema_name }}_role.sql
+    sudo_user: oracle
+    when: test_role_sql_script|changed
+
+  - name: create user
+    shell: >
+      source ~oracle/.bashrc && \
+        sqlplus sys/{{ oracle_system_pwd }} as sysdba < /tmp/{{ schema_name }}_user.sql
+    sudo_user: oracle
+    when: test_schema_sql_script|changed

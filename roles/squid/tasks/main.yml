@@ -1,0 +1,12 @@
+---
+  - name: Install Squid
+    yum: name=squid state=installed
+
+  - name: enable cache
+    lineinfile:
+      dest=/etc/squid/squid.conf
+      regexp="^#cache_dir ufs /var/spool/squid 100 16 256"
+      line="cache_dir ufs /var/spool/squid 1000 16 256"
+
+  - name: Ensure Squid service is started and enabled on boot
+    service: name=squid state=started enabled=yes

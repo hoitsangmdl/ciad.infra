@@ -1,0 +1,94 @@
+---
+
+  # take project template name
+  # check out template
+  # render template
+  # - scm_host, scm_port, repo_host, repo_port
+  # import into project git Repo
+  # setup job-dsl sedd job pointing to repo
+
+  - name: prepare space for project template
+    delegate_to: jenkins
+    sudo: true
+    file:
+      path=/tmp/{{project_key}}
+      state=absent
+
+  - name: check out project template
+    delegate_to: jenkins
+    git:
+      repo="{{project_template_repo_base}}/{{item|lower}}.git"
+      dest=/tmp/{{project_key}}/{{item|lower}}
+      accept_hostkey=True
+      clone=yes
+      update=yes
+      force=yes
+    with_items: "{{project_template_names}}"
+    register: cmd_gitcheckout
+  - debug: var=cmd_gitcheckout
+
+  - name: fetch file for local render
+    delegate_to: jenkins
+    ignore_errors: yes
+    fetch:
+      src=/tmp/{{project_key}}/{{item[0]}}/{{item[1]}}
+      dest=/tmp/{{project_key}}/{{item[0]}}/{{item[1]}}
+      flat=yes
+    with_nested:
+      - "{{project_template_names}}"
+      - "{{project_template_file_names}}"
+    register: cmd_fetch
+  - debug: var=cmd_fetch
+
+  - name: render project file
+    delegate_to: jenkins
+    sudo: yes
+    template:
+      src={{item.dest}}
+      dest={{item.dest}}
+    when: '"checksum" in item'
+    with_items: "{{cmd_fetch.results}}"
+    register: cmd_render
+
+
+#    with_items: "{{project_template_names}}"
+
+  - debug: var=cmd_render
+
+#  - name: commit changes, and import project into scm space
+#    delegate_to: 192.168.100.10
+#    sudo: true
+#    shell: >
+#      chown jenkins:jenkins -R /tmp/{{project_key}};
+#      sudo -u jenkins sh -c \
+#      'cd /tmp/{{project_key}} && \
+#        git config user.name "jenkins" &&
+#        git config user.email "jenkins@localhost" &&
+#        git config --local credential.username "jenkins" && \
+#        git remote remove origin && \
+#        git remote add origin ssh://{{scm_host}}:{{scm_port}}/scm/{{project_key|lower}}/master.git && \
+#        git add pom.xml
+#        git commit -m "Initial commit"
+#        git push -u origin master'
+#    register: cmd_gitpush
+#  - debug: var=cmd_gitpush
+
+  - name: commit changes, and import project into scm space
+    delegate_to: jenkins
+    sudo: true
+    shell: >
+      chown jenkins:jenkins -R /tmp/{{project_key}}/{{item}} &&
+      sudo -u jenkins sh -c
+      'cd /tmp/{{project_key}}/{{item}} &&
+        git config user.name "jenkins" &&
+        git config user.email "jenkins@localhost" &&
+        git remote remove origin &&
+        git remote add origin ssh://{{scm_host}}:{{scm_port}}/scm/{{project_key|lower}}/{{item}}.git &&
+        git add * &&
+        git commit -m "Initial Commit" &&
+        (git pull origin master -f || true) &&
+        git push -u origin master'
+    with_items: "{{project_template_names}}"
+    when: commit_git
+    register: cmd_gitpush
+  - debug: var=cmd_gitpush

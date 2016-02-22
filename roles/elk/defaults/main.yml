@@ -1,0 +1,12 @@
+---
+kibana_version: 4.3.1
+kibana_archive: kibana-{{kibana_version}}-linux-x64.tar.gz
+kibana_url: https://download.elastic.co/kibana/kibana/{{kibana_archive}}
+kibana_extract: /opt/kibana/kibana-4.0.2-linux-x64
+kibana_user: kibana
+kibana_group: kibana
+kibana_artifactory_url: "http://artifactory:8081/artifactory/local-generic/elastic/kibana/{{kibana_version}}/{{kibana_archive}}"
+
+artifactory_api_url: http://artifactory:8081/artifactory/api
+artifactory_api_username: "admin"
+artifactory_api_password: "password"

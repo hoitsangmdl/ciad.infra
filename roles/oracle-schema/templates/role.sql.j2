@@ -1,0 +1,38 @@
+set echo on
+spool ./create_role.log
+
+-- --------------------------------------
+-- TEST
+-- --------------------------------------
+DROP ROLE {{ schema_name }}_role;
+
+CREATE ROLE {{ schema_name }}_role NOT IDENTIFIED;
+GRANT CREATE SESSION TO {{ schema_name }}_role;
+GRANT ALTER SESSION TO {{ schema_name }}_role;
+GRANT CONNECT TO {{ schema_name }}_role;
+
+GRANT CREATE ANY TABLE TO {{ schema_name }}_role;
+GRANT DROP ANY TABLE TO {{ schema_name }}_role;
+GRANT ALTER ANY TABLE TO {{ schema_name }}_role;
+GRANT CREATE ANY TYPE TO {{ schema_name }}_role;
+GRANT CREATE ANY VIEW TO {{ schema_name }}_role;
+
+GRANT CREATE SYNONYM TO {{ schema_name }}_role;
+GRANT DROP ANY SYNONYM TO {{ schema_name }}_role;
+GRANT CREATE PUBLIC SYNONYM TO {{ schema_name }}_role;
+GRANT DROP PUBLIC SYNONYM TO {{ schema_name }}_role;
+
+GRANT CREATE CLUSTER TO {{ schema_name }}_role;
+GRANT CREATE DIMENSION TO {{ schema_name }}_role;
+GRANT CREATE PUBLIC DATABASE LINK TO {{ schema_name }}_role;
+GRANT CREATE ROLE TO {{ schema_name }}_role;
+GRANT CREATE SEQUENCE TO {{ schema_name }}_role;
+GRANT CREATE SNAPSHOT TO {{ schema_name }}_role;
+
+GRANT CREATE PROCEDURE TO {{ schema_name }}_role;
+GRANT CREATE ANY TRIGGER TO {{ schema_name }}_role;
+
+GRANT RESOURCE TO {{ schema_name }}_role;
+
+spool off
+/

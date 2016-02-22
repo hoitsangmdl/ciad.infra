@@ -1,0 +1,33 @@
+---
+
+  - name: prepare space for project template
+    delegate_to: jenkins
+    sudo: true
+    file:
+      path=/tmp/{{project_key}}
+      state=absent
+
+  - name: synchronize project templates
+    delegate_to: jenkins
+    copy:
+      src=files/{{ item }}/
+      dest=/tmp/{{ project_key }}/{{ item }}
+    with_items: "{{ project_template_names }}"
+
+  - name: commit changes, and import project into scm space
+    delegate_to: jenkins
+    sudo: true
+    shell: >
+      chown jenkins:jenkins -R /tmp/{{project_key}}/{{item}} &&
+      sudo -u jenkins sh -c
+      'cd /tmp/{{project_key}}/{{item}} &&
+        git config user.name "jenkins" &&
+        git config user.email "jenkins@localhost" &&
+        git remote remove origin &&
+        git remote add origin ssh://git@{{scm_host}}:{{scm_port}}/scm/{{project_key|lower}}/{{item}}.git &&
+        git add --all &&
+        git push origin master'
+    with_items: "{{project_template_names}}"
+    when: commit_git
+    register: cmd_gitpush
+  - debug: var=cmd_gitpush

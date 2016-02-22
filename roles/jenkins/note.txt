@@ -1,0 +1,11 @@
+Jenkins Slave
+sudo groupadd -g 169 jenkins
+sudo useradd -g 169 -u 169 -d /var/lib/jenkins jenkins
+give user /bin/bash; ssl slaves can not find java
+https://issues.jenkins-ci.org/browse/JENKINS-21606
+sudo emacs /etc/passwd
+to login as jenkins without password
+http://apple.stackexchange.com/questions/82438/allow-sudo-to-another-user-without-password
+sudo visudo
+jenkins ALL=(ALL) NOPASSWD: /bin/bash
+sudo -u jenkins -s

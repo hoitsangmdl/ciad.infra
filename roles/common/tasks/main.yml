@@ -1,0 +1,12 @@
+---
+
+  - include: selinux.yml
+  - include: serial.yml
+  - include: dnsalias.yml
+  - include: packages.yml
+  - include: redhat-subscription.yml
+  - include: profile.yml
+  - include: wgetrc.yml
+  - include: curlrc.yml
+  - include: firewall.yml
+  - include: time.yml

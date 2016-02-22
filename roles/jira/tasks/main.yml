@@ -1,0 +1,142 @@
+---
+
+  # ==========
+  # pre setup
+  # ----------
+
+  - name: create group
+    group:
+      name={{jira_group}}
+
+  - name: create user
+    user:
+      name={{jira_username}}
+      group={{jira_group}}
+      system=yes
+
+  - name: prepare directories
+    file:
+      path={{jira_home}}/{{item}}
+      owner={{jira_username}}
+      group={{jira_group}}
+      mode="0755"
+      state="directory"
+    with_items:
+      - lib
+
+  # ====================
+  # download and unpack
+  # --------------------
+
+  - name: cache jira archive into artifactory repo
+    sudo: no
+    delegate_to: localhost
+    artifactory_fetch:
+      repo_item_url: "{{jira_artifactory_url}}"
+      repo_username: "{{artifactory_username}}"
+      repo_password: "{{artifactory_password}}"
+      local_path: "/tmp/{{jira_archive}}"
+      refresh: false
+      fetch_cmd: >
+        wget -c {{jira_url}}
+          -v
+          --timeout=10
+          --no-check-certificate
+          --no-cookie -P /tmp
+
+  - name: download package
+    shell: >
+      wget \
+        -c {{jira_artifactory_url}} \
+        -P /tmp \
+    register: cmd_download
+    retries: 60
+    delay: 15
+
+  - name: ensure version directory exist
+    file: path={{jira_catalina}} state=directory
+
+  - name: unpack archive
+    shell: >
+      tar \
+        -xzvf /tmp/{{jira_archive}} \
+        -C {{jira_catalina}} \
+        --strip-components=1;
+      chown -Rf \
+        {{jira_username}}:{{jira_username}} \
+        {{jira_catalina}}
+
+  # ======
+  # jdbc
+  # ------
+
+  - name: jdbc properties
+    template:
+      src=./templates/dbconfig.j2
+      dest={{jira_home}}/dbconfig.xml
+      owner={{jira_username}}
+
+  - name: jdbc lib directory
+    file:
+      dest={{jira_home}}/lib
+      state=directory
+
+  - name: jdbc driver
+    copy:
+      src=./files/ojdbc6.jar
+      dest={{jira_home}}/lib/ojdbc6.jar
+
+  # =======
+  # config
+  # -------
+
+  - name: update setenv.sh
+    lineinfile:
+      dest={{jira_catalina}}/bin/setenv.sh
+      line="{{item.line}}"
+      regexp="{{item.regex}}"
+      backup=yes
+      state=present
+      insertafter='^#JIRA_HOME='
+    with_items:
+      - { line: "JIRA_HOME={{jira_home}}", regex: "^#JIRA_HOME=.*"}
+      - { line: 'source /etc/profile.d/jdk.sh', regex: '^source\ /etc/profile.d/jdk.sh'}
+      - { line: 'source /etc/profile.d/proxy.sh', regex: '^source\ /etc/profile.d/proxy.sh'}
+      - { line: "JVM_MAXIMUM_MEMORY={{jira_jvm_maximum_memory}}", regex: "^JVM_MAXIMUM_MEMORY="}
+      - { line: 'JAVA_OPTS="-Xms${JVM_MINIMUM_MEMORY} -Xmx${JVM_MAXIMUM_MEMORY} ${_JAVA_OPTIONS} ${JAVA_OPTS} ${JVM_REQUIRED_ARGS} ${DISABLE_NOTIFICATIONS} ${JVM_SUPPORT_RECOMMENDED_ARGS} ${JVM_EXTRA_ARGS} ${JIRA_HOME_MINUSD}"', regex: "^JAVA_OPTS="}
+
+
+  # ========
+  # symlink
+  # --------
+  - name: install current symlink
+    file:
+      src={{jira_catalina}}
+      dest=/opt/jira/current
+      state=link
+
+  # ========
+  # service
+  # --------
+
+  - name: install startup service
+    template:
+      src=./templates/jira.service.j2
+      dest=/etc/systemd/system/jira.service
+      owner=root
+      backup=yes
+
+  - name: enable startup service
+    shell: >
+      systemctl enable jira.service
+
+  - name: startup jira service
+    shell: >
+      systemctl restart jira.service
+
+  # ========
+  # clean up
+  # --------
+
+  - name: clean up download tarball
+    file: path=/tmp/{{jira_archive}} state=absent

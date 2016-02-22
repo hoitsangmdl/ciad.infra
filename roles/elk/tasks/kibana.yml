@@ -1,0 +1,102 @@
+---
+
+  # ====================
+  # download and extract
+  # --------------------
+  - name: ensure kibana group exists
+    group: name=kibana
+
+  - name: ensure kibana user exists
+    user: name=kibana group=kibana
+
+  # ====================
+  # download and unpack
+  # --------------------
+  - name: create local-generic artifactory repo
+    sudo: no
+    delegate_to: localhost
+    artifactory_repo:
+      state="present"
+      api_url="{{artifactory_api_url}}"
+      api_username="{{artifactory_api_username}}"
+      api_password="{{artifactory_api_password}}"
+      rclass="local"
+      repo_key="local-generic"
+      package_type="generic"
+
+  - name: cache kibana archive into artifactory repo
+    sudo: no
+    delegate_to: localhost
+    artifactory_fetch:
+      repo_item_url: "{{kibana_artifactory_url}}"
+      repo_username: "{{artifactory_api_username}}"
+      repo_password: "{{artifactory_api_password}}"
+      local_path: "/tmp/{{kibana_archive}}"
+      refresh: false
+      fetch_cmd: >
+        wget -c {{kibana_url}}
+          -v
+          --timeout=10
+          --no-check-certificate
+          --no-cookie -P /tmp
+
+  - name: download package
+    shell: >
+      wget \
+        -c {{kibana_artifactory_url}} \
+        -P /tmp \
+    register: cmd_download
+    retries: 60
+    delay: 15
+
+  - name: ensure kibana_extract dir exists
+    file:
+      path={{ kibana_extract }}
+      owner={{ kibana_user }}
+      group={{ kibana_group }}
+      state=directory
+
+  - name: unpack archive
+    shell: >
+      tar \
+        -xzvf /tmp/{{kibana_archive}} \
+        -C {{kibana_extract}} \
+        --strip-components=1;
+      chown -Rf \
+        {{kibana_user}}:{{kibana_user}} \
+        {{kibana_extract}}
+
+  - name: install current symlink
+    file:
+      src={{kibana_extract}}
+      dest=/opt/kibana/current
+      state=link
+
+  # ====================
+  # config
+  # --------------------
+
+  - name: enable pid for startup
+    lineinfile:
+      dest={{ kibana_extract }}/config/kibana.yml
+      regexp='^#pid_file'
+      line='pid_file=/var/run/kibana.pid'
+
+  - name: setup startup service
+    copy:
+      src=kibana.service
+      dest=/etc/systemd/system/kibana.service
+
+  - name: wait till elasticsearch is up before starting kibana
+    command: >
+      timeout 1 bash -c "cat < /dev/null > /dev/tcp/localhost/9200"
+    register: elastic_up
+    until: elastic_up.rc == 0
+    retries: 60
+    delay: 1
+
+  - name: eanble kibana service
+    service:
+      name=kibana
+      enabled=yes
+      state=started

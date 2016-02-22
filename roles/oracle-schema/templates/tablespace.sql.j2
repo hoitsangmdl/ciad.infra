@@ -1,0 +1,33 @@
+set echo on
+spool ./create_tablespace.log
+
+drop tablespace {{ schema_name }}_tbs INCLUDING CONTENTS and datafiles CASCADE CONSTRAINTS;
+
+create tablespace {{ schema_name }}_tbs
+	datafile '/u01/app/oracle/oradata/XE/{{ schema_name }}_tbs.dbf'
+	size 32m
+	autoextend on
+	next 32m maxsize 1024m
+	extent management local;
+
+drop tablespace {{ schema_name }}_temp_tbs INCLUDING CONTENTS and datafiles CASCADE CONSTRAINTS;
+
+create temporary tablespace {{ schema_name }}_temp_tbs
+	tempfile '/u01/app/oracle/oradata/XE/{{ schema_name }}_temp_tbs.dbf'
+	size 32m
+	autoextend on
+	next 32m maxsize 1024m
+	extent management local;
+
+drop tablespace {{ schema_name }}_idx_tbs INCLUDING CONTENTS and datafiles CASCADE CONSTRAINTS;
+
+CREATE TABLESPACE {{ schema_name }}_idx_tbs
+	DATAFILE '/u01/app/oracle/oradata/XE/{{ schema_name }}_idx_tbs.dbf'
+	SIZE 32M REUSE
+	AUTOEXTEND ON
+	NEXT 32M MAXSIZE 1024m
+	EXTENT MANAGEMENT LOCAL UNIFORM SIZE 4M
+	SEGMENT SPACE MANAGEMENT AUTO;
+
+select * from v$tablespace;
+/

@@ -1,0 +1,28 @@
+---
+  - yum: name=libselinux-python state=installed
+  - stat: path=/etc/init.d/oracle-xe
+    register: oracle
+  - stat: path={{swapfile_location}}
+    register: swap
+  - include: oracle-xe-swap.yml
+    when: (not docker or docker == 'no') and (not oracle.stat.exists) and (not swap.stat.exists)
+  - include: oracle-xe-install.yml
+    when: (not oracle.stat.exists)
+  - stat: path=/etc/sysconfig/oracle-xe
+    register: conf
+  - include: oracle-xe-configure.yml
+    when: (not conf.stat.exists) or (oracle_reconfigure == 'yes')
+  - name: restart oracle-xe
+    service: name=oracle-xe state=restarted
+    when: (not oracle.stat.exists) or (not conf.stat.exists) or (oracle_reconfigure == 'yes')
+  - stat: path=/u01/app/oracle/.bashrc
+    register: bashrc
+  - file: path=/u01/app/oracle/.bashrc owner=oracle group=dba state=touch
+    when: (not bashrc.stat.exists)
+  - lineinfile: dest=/u01/app/oracle/.bashrc line="export ORACLE_HOME=/u01/app/oracle/product/11.2.0/xe" state=present
+  - lineinfile: dest=/u01/app/oracle/.bashrc line="export ORACLE_SID=XE" state=present
+  - lineinfile: dest=/u01/app/oracle/.bashrc line="export ORACLE_BASE=/u01/app/oracle" state=present
+  - lineinfile: dest=/u01/app/oracle/.bashrc line="export PATH=$ORACLE_HOME/bin:$PATH" state=present
+
+  - include: oracle-xe-test.yml
+    when: oracle-xe-test

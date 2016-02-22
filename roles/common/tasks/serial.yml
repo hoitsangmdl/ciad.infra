@@ -1,0 +1,4 @@
+---
+
+  - name: disable serial tty
+    service: name=serial-getty@ttyS0.service state=stopped enabled=no

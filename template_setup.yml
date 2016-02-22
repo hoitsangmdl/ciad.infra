@@ -1,0 +1,10 @@
+---
+- hosts: local
+  sudo: no
+  roles:
+    - {
+        role: template-setup,
+        project_key: "PROJTMPL",
+        project_name: "Project Templates",
+        project_templates: "helloworld, helloworld-deploy, helloworld-jobdsl"
+      }

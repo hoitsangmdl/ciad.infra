@@ -1,0 +1,4 @@
+---
+- include: logstash-forwarder.yml
+- include: nagios-nrpe.yml
+- include: collectd.yml

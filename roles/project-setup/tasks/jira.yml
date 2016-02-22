@@ -1,0 +1,29 @@
+---
+
+  - name: create project jira admin user
+    delegate_to: localhost
+    jira_user:
+      api_url="{{jira_url}}"
+      api_username="{{api_username}}"
+      api_password="{{api_password}}"
+      username="{{project_key|lower}}_admin"
+      password=".{{project_key|lower}}_admin"
+      display_name="{{project_key}} admin"
+      email_address="hoitsangmdl@gmail.com"
+      app_keys='jira-software, jira-core'
+    register: cmd_user
+
+  - debug: var=cmd_user
+
+  - name: create jira project space
+    delegate_to: localhost
+    jira_project:
+      api_url="{{jira_url}}"
+      api_username="{{api_username}}"
+      api_password="{{api_password}}"
+      project_key="{{project_key|upper}}"
+      project_name="{{project_name}}"
+      assignee="{{project_key|lower}}_admin"
+    register: cmd_proj
+
+  - debug: var=cmd_proj

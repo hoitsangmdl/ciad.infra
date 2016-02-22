@@ -1,0 +1,18 @@
+---
+
+  - name: install openjdk
+    yum: name={{item}} state=installed
+    with_items:
+    - java-1.8.0-openjdk
+    - java-1.8.0-openjdk-devel
+
+  - name: check java version
+    shell: java -version && javac -version
+    register: cmd_java_ver
+
+  - name: create /etc/profile.d/jdk.sh
+    template: src=./templates/jdk.sh dest=/etc/profile.d/jdk.sh mode=0644
+
+#  - assert:
+#      that:
+#        - '"OpenJDK" in cmd_java_ver.stderr'

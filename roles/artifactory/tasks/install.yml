@@ -1,0 +1,30 @@
+---
+  
+  # ===============
+  # update symlink
+  # ---------------
+
+  - name: check if /opt/artifactory/current exists
+    stat: path={{artifactory_base}}/current
+    register: cmd_current_symlink_exists
+
+  - name: set /opt/artifactory/current symlink
+    file: state=link src={{artifactory_home}} dest={{artifactory_base}}/current
+    when: not cmd_current_symlink_exists.stat.exists or {{register_current_symlink}}
+
+  # ==========================
+  # install service and start
+  # --------------------------
+
+  - name: install artifactory as service
+    command: "{{artifactory_home}}/bin/installService.sh {{artifactory_username}}"
+
+  - name: start artifactory
+    service: name=artifactory state=started enabled=yes
+
+  # ========
+  # clean up
+  # --------
+
+  - name: clean up download tarball
+    file: path=/tmp/{{artifactory_file}} state=absent

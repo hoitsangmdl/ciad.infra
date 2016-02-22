@@ -1,0 +1,152 @@
+---
+
+  # ==========
+  # pre setup
+  # ----------
+  - name: ensure git exists
+    yum: name=git state=present
+
+  - name: create group
+    group:
+      name={{bitbucket_group}}
+
+  - name: create bitbucket user
+    user:
+      name={{bitbucket_username}}
+      group={{bitbucket_group}}
+      system=yes
+
+  - name: prepare directories
+    file:
+      path={{bitbucket_home}}/{{item}}
+      owner={{bitbucket_username}}
+      group={{bitbucket_group}}
+      mode="0755"
+      state="directory"
+    with_items:
+      - lib
+      - shared
+
+  # ====================
+  # download and unpack
+  # --------------------
+
+  - name: cache bitbucket archive into artifactory repo
+    sudo: no
+    delegate_to: localhost
+    artifactory_fetch:
+      repo_item_url: "{{bitbucket_artifactory_url}}"
+      repo_username: "{{artifactory_username}}"
+      repo_password: "{{artifactory_password}}"
+      local_path: "/tmp/{{bitbucket_archive}}"
+      refresh: false
+      fetch_cmd: >
+        wget -c {{bitbucket_url}}
+          -v
+          --timeout=10
+          --no-check-certificate
+          --no-cookie -P /tmp
+
+  - name: download package
+    shell: >
+      wget \
+        -c {{bitbucket_artifactory_url}} \
+        -P /tmp \
+    register: cmd_download
+    retries: 60
+    delay: 15
+
+  - name: ensure version directory exist
+    file: path={{bitbucket_catalina}} state=directory
+
+  - name: unpack archive
+    shell: >
+      tar \
+        -xzvf /tmp/{{bitbucket_archive}} \
+        -C {{bitbucket_catalina}} \
+        --strip-components=1;
+      chown -Rf \
+        {{bitbucket_username}}:{{bitbucket_username}} \
+        {{bitbucket_catalina}}
+
+  # ======
+  # jdbc
+  # ------
+
+  - name: jdbc properties
+    lineinfile:
+      dest={{bitbucket_home}}/shared/bitbucket.properties
+      line={{item.line}}
+      regexp={{item.regex}}
+      backup=yes
+      create=yes
+      state=present
+      owner={{bitbucket_username}}
+    with_items:
+      - { line: "jdbc.driver={{bitbucket_jdbc_driver}}", regex: '^jdbc.driver='}
+      - { line: "jdbc.url={{bitbucket_jdbc_url}}", regex: '^jdbc.url='}
+      - { line: "jdbc.user={{bitbucket_jdbc_username}}", regex: '^jdbc.user='}
+      - { line: "jdbc.password={{bitbucket_jdbc_password}}", regex: '^jdbc.password='}
+
+  - name: jdbc lib directory
+    file:
+      dest={{bitbucket_home}}/lib
+      state=directory
+
+  - name: jdbc driver
+    copy:
+      src=./files/ojdbc6.jar
+      dest={{bitbucket_home}}/lib/ojdbc6.jar
+
+  # =======
+  # config
+  # -------
+
+  - name: update setenv.sh
+    lineinfile:
+      dest={{bitbucket_catalina}}/bin/setenv.sh
+      line={{item.line}}
+      regexp={{item.regex}}
+      backup=yes
+      state=present
+      insertafter='^#!/usr/bin/env bash'
+    with_items:
+      - { line: "BITBUCKET_HOME={{bitbucket_home}}", regex: "^BITBUCKET_HOME=.*"}
+      - { line: 'source /etc/profile.d/jdk.sh', regex: '^source /etc/profile.d/jdk.sh'}
+      - { line: "JVM_MAXIMUM_MEMORY={{bitbucket_jvm_maximum_memory}}", regex: "^JVM_MAXIMUM_MEMORY="}
+
+  # ========
+  # symlink
+  # --------
+  - name: install current symlink
+    file:
+      src={{bitbucket_catalina}}
+      dest=/opt/bitbucket/current
+      state=link
+
+  # ========
+  # service
+  # --------
+
+  - name: install startup service
+    copy:
+      src=./files/bitbucket.service
+      dest=/etc/systemd/system/bitbucket.service
+      owner=root
+      mode=755
+      backup=yes
+
+  - name: enable startup service
+    shell: >
+      systemctl enable bitbucket.service
+
+  - name: startup bitbucket service
+    shell: >
+      systemctl start bitbucket
+
+  # ========
+  # clean up
+  # --------
+
+  - name: clean up download tarball
+    file: path=/tmp/{{bitbucket_archive}} state=absent

@@ -1,0 +1,109 @@
+---
+
+  - name: create jenkins user
+    delegate_to: localhost
+    bitbucket_user:
+      api_url="{{bitbucket_url}}"
+      api_username="{{api_username}}"
+      api_password="{{api_password}}"
+      username="jenkins"
+      password=".jenkins"
+      display_name="jenkins"
+      email_address="jenkins@local"
+    register: cmd_user
+
+  - name: create bitbucket project admin user
+    delegate_to: localhost
+    bitbucket_user:
+      api_url="{{bitbucket_url}}"
+      api_username="{{api_username}}"
+      api_password="{{api_password}}"
+      username="{{project_key|lower}}_admin"
+      password=".{{project_key|lower}}_admin"
+      display_name="{{project_name}} admin"
+      email_address="hoitsangmdl@gmail.com"
+    register: cmd_user
+
+  - debug: var=cmd_user
+
+  - name: create bitbucket project
+    delegate_to: localhost
+    bitbucket_project:
+      api_url="{{bitbucket_url}}"
+      api_username="{{api_username}}"
+      api_password="{{api_password}}"
+      namespace="{{project_key|upper}}"
+      key="{{project_key|upper}}"
+      name="{{project_name}}"
+    register: cmd_bitproj
+
+  - debug: var=cmd_bitproj
+
+  - name: create bitbucket repo
+    delegate_to: localhost
+    bitbucket_repo:
+      api_url="{{bitbucket_url}}"
+      api_username="{{api_username}}"
+      api_password="{{api_password}}"
+      project_key="{{project_key}}"
+      repo_slug="{{item}}"
+    with_items: "{{project_template_names}}"
+    register: cmd_bitrepo
+
+  - debug: var=cmd_bitrepo
+
+  - name: assign repo admin user
+    delegate_to: localhost
+    bitbucket_project_user:
+      api_url="{{bitbucket_url}}"
+      api_username="{{api_username}}"
+      api_password="{{api_password}}"
+      project_key="{{project_key|upper}}"
+      username="{{project_key|lower}}_admin"
+      permission="PROJECT_ADMIN"
+    register: cmd_bitrepouser
+
+  - debug: var=cmd_bitrepouser
+
+  - name: assign repo jenkins user
+    delegate_to: localhost
+    bitbucket_project_user:
+      api_url="{{bitbucket_url}}"
+      api_username="{{api_username}}"
+      api_password="{{api_password}}"
+      project_key="{{project_key|upper}}"
+      username="jenkins"
+      permission="PROJECT_WRITE"
+    register: cmd_bitrepo_jenkinsuser
+
+  - debug: var=cmd_bitrepo_jenkinsuser
+
+  - name: generate jenkins public keys from jenkins
+    delegate_to: jenkins
+    ignore_errors: yes
+    shell: >
+      sudo -u jenkins sh -c "echo 'n\n'| ssh-keygen -t rsa -f ~jenkins/.ssh/id_rsa -N '' -q && ssh-keyscan -p 7999 bitbucket >> ~jenkins/.ssh/known_hosts"
+    register: cmd_genkey
+
+  - debug: var=cmd_genkey
+
+  - name: fetch key from jenkins user from jenkins
+    delegate_to: jenkins
+    sudo: True
+    sudo_user: jenkins
+    shell: cat ~jenkins/.ssh/id_rsa.pub
+    register: cmd_key
+
+  - debug: var=cmd_key
+
+  - name: ship private key to jenkins account in bitbucket
+    delegate_to: localhost
+    bitbucket_user_ssh_key:
+      api_url="{{bitbucket_url}}"
+      api_username="{{api_username}}"
+      api_password="{{api_password}}"
+      username="jenkins"
+      ssh_key_text="{{cmd_key.stdout}}"
+    register: cmd_bitrprojectsshkey
+
+  - debug: var=cmd_bitrprojectsshkey

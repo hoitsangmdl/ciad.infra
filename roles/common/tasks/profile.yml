@@ -1,0 +1,41 @@
+---
+
+  #======================================
+  # /etc/profile.d/proxy.sh
+  #
+  # usage: source [proxy.sh] && wget ...
+  # -------------------------------------
+
+  - name: setup /etc/profile.d/proxy.sh
+    lineinfile:
+      dest=/etc/profile.d/proxy.sh
+      line="{{item.line}}"
+      regexp="{{item.regex}}"
+      create=True
+      state=present
+    with_items:
+      - {line: "http_proxy=http://{{proxy_host}}:{{proxy_port}}",   regex: "^http_proxy=.*"}
+      - {line: "https_proxy=https://{{proxy_host}}:{{proxy_port}}", regex: "^https_proxy=.*"}
+      - {line: "proxy_host={{proxy_host}}", regex: "^proxy_host=.*"}
+      - {line: "proxy_port={{proxy_port}}", regex: "^proxy_port=.*"}
+      - {line: "_JAVA_OPTIONS='-Dhttp.proxyHost={{proxy_host}} -Dhttp.proxyPort={{proxy_port}}'", regex: "^_JAVA_OPTIONS=.*"}
+      - {line: "no_proxy=localhost,127.0.0.0/8,127.0.1.1,127.0.1.1*,local.home,artifactory", regex: "^no_proxy=.*"}
+      - {line: "proxy=http://{{proxy_host}}:{{proxy_port}}", regex: "^proxy=.*"}
+    when: use_proxy|bool
+
+  - name: disable /etc/profile.d/proxy.sh
+    lineinfile:
+      dest=/etc/profile.d/proxy.sh
+      line=""
+      regexp="{{item}}"
+      create=True
+      state=present
+    with_items:
+      - "^http_proxy=.*"
+      - "^https_proxy=.*"
+      - "^proxy_host=.*"
+      - "^proxy_port=.*"
+      - "^no_proxy=.*"
+      - "^proxy=.*"
+      - "^_JAVA_OPTIONS=.*"
+    when: not use_proxy|bool

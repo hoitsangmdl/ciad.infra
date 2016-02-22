@@ -1,0 +1,48 @@
+- hosts: all
+  sudo: yes
+  vars:
+  - war_deployed_folder_path: "/var/lib/tomcat/webapps/HelloWorld"
+  - war_deployed_path: "/var/lib/tomcat/webapps/HelloWorld.war"
+  - war_repo_src_url: "http://artifactory:8081/artifactory/hoig/com/mckinsey/HelloWorld/2.11-SNAPSHOT/HelloWorld-2.11-20160109.031102-1.war"
+
+  tasks:
+  - name: shutdown tomcat
+    service:
+      name=tomcat
+      state=stopped
+
+  - name: remove existing folder
+    file:
+      path={{war_deployed_folder_path}}
+      state=absent
+
+  - name: remove existing war
+    file:
+      path={{war_deployed_path}}
+      state=absent
+
+  - name: get war file
+    sudo: no
+    delegate_to: localhost
+    get_url:
+      url={{war_repo_src_url}}
+      dest="/tmp/{{war_repo_src_url.split('/')[-1]}}"
+
+  - name: transfer file
+    copy:
+      src="/tmp/{{war_repo_src_url.split('/')[-1]}}"
+      dest={{war_deployed_path}}
+      mode=0644
+      owner=tomcat
+      group=tomcat
+
+  - name: change file ownership
+    file:
+      path="{{war_deployed_path}}"
+      owner=tomcat
+      group=tomcat
+
+  - name: start tomcat
+    service:
+      name=tomcat
+      state=started

@@ -1,0 +1,5 @@
+---
+- hosts: local
+  sudo: no
+  roles:
+    - { role: project-setup, project_key: HOID, project_name: 'Project D for Hoi' }

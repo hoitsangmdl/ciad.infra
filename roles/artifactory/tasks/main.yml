@@ -1,0 +1,5 @@
+---
+  
+  - include: download.yml
+  - include: config.yml
+  - include: install.yml

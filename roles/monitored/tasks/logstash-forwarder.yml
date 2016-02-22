@@ -1,0 +1,89 @@
+---
+
+    # ====================
+    # LogStash Forwarder
+    # --------------------
+
+  - name: Check if elk:5050 is up
+    shell: >
+      timeout 1 bash -c 'cat < /dev/null > /dev/tcp/elk/5050'
+    register: elk_check_result
+    until: elk_check_result.rc == 0
+    retries: 3
+    delay: 1
+    ignore_errors: yes
+
+  - name: set elk up facts
+    set_fact: elk_up="{{ elk_check_result.rc == 0 }}"
+
+  - debug: var=elk_up
+
+  - name: Check if artifactory:8081 is up
+    shell: >
+      timeout 1 bash -c 'cat < /dev/null > /dev/tcp/artifactory/8081'
+    register: artifactory_check_result
+    until: artifactory_check_result.rc == 0
+    retries: 3
+    delay: 1
+    ignore_errors: yes
+
+  - name: set artifactory up facts
+    set_fact: artifactory_up="{{ artifactory_check_result.rc == 0 }}"
+
+  - debug: var=artifactory_up
+
+  - name: Install LogStash Forwarder
+    yum:
+      name=logstash-forwarder
+      state=present
+    when: elk_up and artifactory_up
+    register: logstash_install_result
+
+  - debug: var=logstash_install_result
+
+  - set_fact: logstash_installed="{{ logstash_install_result.changed }}"
+
+  - name: Fetch cert file from elk server
+    delegate_to: elk
+    run_once: true
+    fetch:
+      src=/etc/pki/tls/certs/logstash-forwarder.crt
+      dest=/tmp/logstash-forwarder.crt
+      flat=yes
+    when: elk_up
+
+  - name: Fetch key file from elk server
+    delegate_to: elk
+    run_once: true
+    fetch:
+      src=/etc/pki/tls/private/logstash-forwarder.key
+      dest=/tmp/logstash-forwarder.key
+      flat=yes
+    when: elk_up
+
+  - name: Copy cert to host
+    copy:
+      src=/tmp/logstash-forwarder.crt
+      dest=/etc/pki/tls/certs/logstash-forwarder.crt
+    when: elk_up
+
+  - name: Copy key to host
+    copy:
+      src=/tmp/logstash-forwarder.key
+      dest=/etc/pki/tls/private/logstash-forwarder.key
+    when: elk_up
+
+  - name: Copy forwarder config
+    copy:
+      src=logstash-forwarder.conf
+      dest=/etc/logstash-forwarder.conf
+      owner=root
+      group=root
+    when: elk_up
+
+  - name: Start logstash forwarder
+    service:
+      name=logstash-forwarder
+      state=restarted
+      enabled=yes
+    when: elk_up and logstash_installed

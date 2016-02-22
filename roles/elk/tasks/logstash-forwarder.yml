@@ -1,0 +1,23 @@
+---
+
+    # ====================
+    # LogStash
+    # --------------------
+
+  - name: Install LogStash Forwarder
+    yum:
+      name=logstash-forwarder
+      state=present
+
+  - name: Configure
+    copy:
+      src=logstash-forwarder.conf
+      dest=/etc/logstash-forwarder.conf
+      owner=root
+      group=root
+
+  - name: Start logstash forwarder
+    service:
+      name=logstash-forwarder
+      state=started
+      enabled=yes

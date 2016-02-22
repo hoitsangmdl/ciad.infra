@@ -1,0 +1,107 @@
+---
+
+  - name: Check if nagios server is up
+    shell: >
+      timeout 1 bash -c 'cat < /dev/null > /dev/tcp/nagios/80'
+    register: nagios_check_result
+    until: nagios_check_result.rc == 0
+    retries: 3
+    delay: 1
+    ignore_errors: yes
+
+  - debug: var=nagios_check_result
+
+  - name: set facts
+    set_fact: nagios_up="{{ nagios_check_result.rc == 0 }}"
+
+  - debug: var=nagios_up
+
+  - name: Check if artifactory:8081 is up
+    shell: >
+      timeout 1 bash -c 'cat < /dev/null > /dev/tcp/artifactory/8081'
+    register: artifactory_check_result
+    until: artifactory_check_result.rc == 0
+    retries: 3
+    delay: 1
+    ignore_errors: yes
+
+  - name: set artifactory up facts
+    set_fact: artifactory_up="{{ artifactory_check_result.rc == 0 }}"
+
+  - debug: var=artifactory_up
+
+  - name: Nagios NRPE Install dependencies
+    yum:
+      name={{ item }}
+      state=present
+    with_items:
+      - nrpe
+      - nagios-plugins-all
+    when: nagios_up and artifactory_up
+    register: nrpe_install_result
+
+#  - debug: var=nrpe_install_result
+#  - set_fact: nrpe_installed="{{nrpe_install_result.changed}}"
+
+  - name: NRPE add nagios in allowed_hosts
+    lineinfile:
+      dest="/etc/nagios/nrpe.cfg"
+      regexp="^allowed_hosts=127.0.0.1"
+      line="allowed_hosts=127.0.0.1,10.0.2.0/24,192.168.100.0/24"
+    when: nagios_up
+#    when: nagios_up and nrpe_installed
+
+  - name: Ensure check all disk command exists
+    lineinfile:
+      dest="/etc/nagios/nrpe.cfg"
+      regexp="^command\[check_all_disks\].*"
+      line="command[check_all_disks]=/usr/lib64/nagios/plugins/check_disk -w 20 -c 10"
+    when: nagios_up
+#    when: nagios_up and nrpe_installed
+
+  - set_fact: host_name="{{ansible_hostname}}"
+
+  - name: Copy host specific nrpe config file if exist
+    delegate_to: nagios
+    template:
+      src={{ansible_hostname}}.cfg.j2
+      dest=/etc/nagios/conf.d/{{ ansible_hostname }}.cfg
+#    when: nagios_up and nrpe_installed
+    when: nagios_up
+    register: host_specific_nrpe
+    ignore_errors: True
+
+  - name: Copy nrpe check config to nagios host
+    delegate_to: nagios
+    template:
+      src=nrpe_node.cfg.j2
+      dest=/etc/nagios/conf.d/{{ ansible_hostname }}.cfg
+    when: nagios_up and not host_specific_nrpe.changed
+#    when: nagios_up and not host_specific_nrpe.changed and nrpe_installed
+
+  - set_fact: host_name="{{include_host}}"
+    when: include_host is defined
+
+  - name: Copy include_host specific nrpe config file if exist
+    delegate_to: nagios
+    template:
+      src={{ include_host }}.cfg.j2
+      dest=/etc/nagios/conf.d/{{ include_host }}.cfg
+    when: nagios_up and include_host is defined
+    ignore_errors: True
+
+  - name: restart start nrpe service
+    service:
+      name=nrpe
+      state=started
+      enabled=yes
+    when: nagios_up
+#    when: nagios_up and nrpe_installed
+
+  - name: restart nagios service
+    delegate_to: nagios
+    service:
+      name=nagios
+      state=restarted
+    when: nagios_up
+#    when: nagios_up and nrpe_installed

@@ -1,0 +1,44 @@
+[base]
+name=CentOS-7 - Base
+baseurl=http://artifactory:8081/artifactory/CentOS-7-Base
+enabled=1
+
+[updates]
+name=CentOS-7 - Updates
+baseurl=http://artifactory:8081/artifactory/CentOS-7-Updates
+enabled=1
+
+[extras]
+name=CentOS-7 - Extras
+baseurl=http://artifactory:8081/artifactory/CentOS-7-Extras
+enabled=0
+
+[centosplus]
+name=CentOS-7 - Plus
+baseurl=http://artifactory:8081/artifactory/CentOS-7-Plus
+enabled=0
+
+
+## =========
+##  SOURCES
+## =========
+
+[base-source]
+name=CentOS-7 - Base Sources
+baseurl=http://artifactory:8081/artifactory/CentOS-7-Base-Source
+enabled=0
+
+[updates-source]
+name=CentOS-7 - Updates Sources
+baseurl=http://artifactory:8081/artifactory/CentOS-7-Updates-Source
+enabled=0
+
+[extras-source]
+name=CentOS-7 - Extras Sources
+baseurl=http://artifactory:8081/artifactory/CentOS-7-Extras-Source
+enabled=0
+
+[centosplus-source]
+name=CentOS-7 - Plus Sources
+baseurl=http://artifactory:8081/artifactory/CentOS-7-Plus-Source
+enabled=0

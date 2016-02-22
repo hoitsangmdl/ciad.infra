@@ -1,0 +1,181 @@
+---
+
+  # ==========
+  # pre setup
+  # ----------
+
+  - name: ensure curl and git are installed
+    yum: name={{item}} state=installed
+    with_items:
+    - git
+    - curl
+    - wget
+    - python-devel
+    - gcc
+
+  - name: add jenkins group
+    group: name=jenkins
+
+  - name: add jenkins user
+    user: name=jenkins group=jenkins
+
+  # ================
+  # install jenkins
+  # ----------------
+
+  - name: ensure jenkins is installed
+    yum: name=jenkins state=installed
+
+  - name: source /etc/profile.d/proxy.sh in ~jenkins/.bashrc
+    lineinfile:
+      dest=~jenkins/.bashrc
+      line="source /etc/profile.d/proxy.sh"
+      regexp="^source /etc/profile.d/proxy.sh"
+      state=present
+
+  - name: inject proxy into jenkins config
+    lineinfile:
+      dest=/etc/sysconfig/jenkins
+      line="source /etc/profile.d/proxy.sh"
+      state=present
+      insertbefore="^JENKINS_JAVA_OPTIONS=.*"
+
+  - name: applying jenkins java opt
+    lineinfile:
+      dest=/etc/sysconfig/jenkins
+      regexp="^JENKINS_JAVA_OPTIONS=.*"
+      line="JENKINS_JAVA_OPTIONS=\"{{jenkins_java_opts}}\""
+      insertafter="^source /etc/profile.d/proxy.sh"
+
+  - name: start jenkins service
+    service: name=jenkins state=started enabled=yes
+
+  - name: wait for startup to be ready
+    shell: >
+      curl -D - --silent http://localhost:8080/
+    register: result
+    until: (result.stdout.find("200 OK") != -1) and (result.stdout.find("Please wait while") == -1)
+    retries: 60
+    delay: 15
+    changed_when: false
+
+  - name: load jenkins client jar
+    shell: >
+      curl http://localhost:8080/jnlpJars/jenkins-cli.jar -o /opt/jenkins-cli.jar
+    retries: 60
+    register: cmd_getjar
+
+  # ================
+  # install plugins
+  # ----------------
+
+  - name: ensure jenkins update folder exists
+    file:
+      path: /var/lib/jenkins/updates
+      owner: jenkins
+      group: jenkins
+      mode: 0755
+      state: directory
+
+  - name: fetch jenkins plugin data
+    shell: >
+      source /etc/profile.d/proxy.sh &&
+      curl -L https://updates.jenkins-ci.org/update-center.json |
+      sed '1d;$d' > /var/lib/jenkins/updates/default.json
+      creates=/var/lib/jenkins/update/default.json
+
+  - name: change plugin data file permission
+    file:
+      path: /var/lib/jenkins/updates/default.json
+      owner: jenkins
+      group: jenkins
+      mode: 0755
+
+  - name: install jenkins plugins
+    shell: >
+      source /etc/profile.d/jdk.sh &&
+      java -jar /opt/jenkins-cli.jar -s http://localhost:8080/ install-plugin {{item}}
+      creates=/var/lib/jenkins/{{item}}.jpi
+    with_items: jenkins_plugins
+    retries: 3
+
+  # jenkins-playbook
+  - name: create jenkins user for artifactory
+    sudo: no
+    delegate_to: localhost
+    artifactory_user:
+      api_url="{{artifactory_api_url}}"
+      api_username="{{artifactory_api_username}}"
+      api_password="{{artifactory_api_password}}"
+      username="{{jenkins_artifactory_username}}"
+      password="{{jenkins_artifactory_password}}"
+      email="jenkins@localhost"
+
+
+  # ================
+  # custom settings
+  # ----------------
+
+  - name: ensure .m2 folder exists
+    file:
+      path=~jenkins/.m2/
+      state=directory
+      owner=jenkins
+      group=jenkins
+
+  - name: transfer .m2/settings.xml
+    template:
+      src=templates/settings.xml.j2
+      dest=~jenkins/.m2/settings.xml
+      owner=jenkins
+      group=jenkins
+
+  - name: transfer .m2/settings.xml
+    template:
+      src=templates/settings.xml.j2
+      dest=~jenkins/.m2/settings.xml
+      owner=jenkins
+      group=jenkins
+
+  - name: transfer setting files over
+    copy:
+      src={{ item }}
+      dest=/var/lib/jenkins/{{ item }}
+      owner=jenkins
+      group=jenkins
+      backup=yes
+    with_items:
+      - "config.xml"
+      - "hudson.tasks.Maven.xml"
+      - "jenkins.security.QueueItemAuthenticatorConfiguration.xml"
+      - "secrets.tar.gz"
+      - "users.tar.gz"
+
+  - name: unzip secrets and users tarball
+    shell: tar -xzvf {{ item }}.tar.gz && chown -R jenkins:jenkins {{ item }}
+      chdir=/var/lib/jenkins
+    with_items:
+      - users
+      - secrets
+
+  - name: install pyhton pip and virtualenv
+    shell: easy_install pip==1.2 && pip install virtualenv
+
+  # ================
+  # restart jenkins
+  # ----------------
+
+  - name: restart jenkins
+    service: name=jenkins state=restarted
+
+
+
+  # ====================
+  # generate slave keys
+  # --------------------
+#  - name: generate slave keys
+#    authorized_key:
+#      user: jenkins
+#      key: "{{lookup('file', '/home/jenkins/.ssh/id_rsa.pub')}}"
+#      path: '/etc/ssh/authorized_keys/charlie'
+#      manage_dir: yes

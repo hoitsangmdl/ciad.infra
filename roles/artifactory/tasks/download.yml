@@ -1,0 +1,28 @@
+---
+  
+  # ====================
+  # download and unpack
+  # --------------------
+
+  - name: create /opt/artifactory directory
+    file: dest={{artifactory_base}} state=directory
+
+  - name: checking if artifactory version already exist
+    stat: path={{artifactory_home}}/webapps/artifactory.war
+    register: cmd_warfile
+
+  - name: download artifactory
+    command: >
+      wget -c {{artifactory_url}} -O /tmp/{{artifactory_file}}
+        --timeout=10 --no-check-certificate --no-cookie
+    when: not cmd_warfile.stat.exists
+
+  - name: unpack artifactory archive
+    command: unzip -o /tmp/{{artifactory_file}} -d /opt/artifactory
+    when: not cmd_warfile.stat.exists
+
+  - name: create user to run artifactory
+    user: name={{artifactory_username}}
+
+  - name: create config directory for artifactory
+    file: dest=/etc/opt/jfrog/artifactory state=directory

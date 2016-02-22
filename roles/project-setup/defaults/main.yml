@@ -1,0 +1,27 @@
+---
+
+artifactory_url: "http://artifactory:8081/artifactory/api"
+jira_url: "http://jira:8080"
+jenkins_url: "http://jenkins:8080"
+bitbucket_url: "http://bitbucket:7990"
+api_username: "admin"
+api_password: "password"
+
+project_key: "HOIX"
+project_name: "Project X for Hoi"
+
+project_templates: "helloworld, helloworld-deploy, helloworld-jobdsl"
+project_template_names: "{{ project_templates.replace(' ', '').split(',') }}"
+project_template_files: "pom.xml, deploy.sh, seed.groovy"
+project_template_file_names: ['pom.xml', 'deploy.sh', 'seed.groovy']
+project_template_repo_base: "{{bitbucket_url}}/scm/projtmpl"
+
+repo_name: 'HelloWorld'
+
+scm_host: bitbucket
+scm_port: 7999
+repo_host: artifactory
+repo_port: 8081
+commit_git: True
+jenkins_username: 'jenkins'
+jenkins_password: '.jenkins'

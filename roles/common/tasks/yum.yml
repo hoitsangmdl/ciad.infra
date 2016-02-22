@@ -1,0 +1,21 @@
+---
+    #========================
+  # /etc/yum.conf: proxy=?
+  #------------------------
+
+  - name: setup yum proxy
+    lineinfile:
+      dest=/etc/yum.conf
+      line="proxy=http://{{proxy_host}}:{{proxy_port}}"
+      insertafter="[main]"
+      regexp='^[main]\nproxy=_none_'
+      backup=yes
+    when: use_proxy|bool and update_yum_conf|bool
+
+  - name: disable yum proxy
+    lineinfile:
+      dest=/etc/yum.conf
+      regexp='^proxy=http://{{proxy_host}}:{{proxy_port}}'
+      line='proxy=_none_'
+      backup=yes
+    when: not use_proxy|bool and update_yum_conf|bool

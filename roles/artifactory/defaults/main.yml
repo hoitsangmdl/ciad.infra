@@ -1,0 +1,14 @@
+---
+
+  register_current_symlink: True
+  artifactory_version: "4.5.1"
+  artifactory_username: "artifactory"
+  artifactory_password: "password"
+  artifactory_url: "https://bintray.com/artifact/download/jfrog/artifactory-pro/org/artifactory/pro/jfrog-artifactory-pro/{{artifactory_version}}/jfrog-artifactory-pro-{{artifactory_version}}.zip"
+  artifactory_file: "artifactory-pro-{{artifactory_version}}.zip"
+
+  #artifactory_url: "https://bintray.com/artifact/download/jfrog/artifactory/{{artifactory_file}}"
+  #artifactory_file: "jfrog-artifactory-oss-{{artifactory_version}}.zip"
+  artifactory_base: "/opt/artifactory"
+  artifactory_home: "{{artifactory_base}}/artifactory-pro-{{artifactory_version}}"
+  #artifactory_home: "{{artifactory_base}}/artifactory-oss-{{artifactory_version}}"

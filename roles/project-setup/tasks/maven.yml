@@ -1,0 +1,24 @@
+---
+
+  - name: create project maven repo
+    sudo: no
+    delegate_to: localhost
+    artifactory_repo:
+      state="present"
+      api_url="{{artifactory_url}}"
+      api_username="{{api_username}}"
+      api_password="{{api_password}}"
+      rclass="local"
+      repo_key="{{project_key|lower}}"
+      package_type="maven"
+
+  - name: assign jenkins user to maven repo
+    sudo: no
+    delegate_to: localhost
+    artifactory_repo_permission:
+      api_url="{{artifactory_url}}"
+      api_username="{{api_username}}"
+      api_password="{{api_password}}"
+      repo_key="{{project_key|lower}}"
+      repo_users="jenkins"
+      repo_permissions="r,w,n,d"

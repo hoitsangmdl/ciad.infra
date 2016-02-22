@@ -1,0 +1,34 @@
+---
+
+  - name: Check if elk:5050 is up
+    shell: >
+      timeout 1 bash -c 'cat < /dev/null > /dev/tcp/elk/5050'
+    register: elk_check_result
+    until: elk_check_result.rc == 0
+    retries: 3
+    delay: 1
+    ignore_errors: yes
+
+  - debug: var=elk_check_result
+
+  - name: set elk up facts
+    set_fact: elk_up="{{ elk_check_result.rc == 0 }}"
+
+  - debug: var=elk_up
+
+  - name: Install Collectd
+    yum: name=collectd state=present
+    when: elk_up
+
+  - name: Copy Collectd config
+    template:
+      src=collectd.cfg.j2
+      dest=/etc/collectd.d/localhost.cfg
+    when: elk_up
+
+  - name: Restart CollectD process
+    service:
+      name=collectd
+      state=started
+      enabled=yes
+    when: elk_up

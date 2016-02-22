@@ -1,0 +1,37 @@
+---
+
+    # ====================
+    # LogStash
+    # --------------------
+
+  - name: Install LogStash
+    yum:
+      name=logstash
+      state=present
+
+  - name: Create SSL Cert
+    shell: >
+      cd /etc/pki/tls && \
+      openssl req -x509 -nodes -newkey rsa:2048 -days 365 \
+        -keyout private/logstash-forwarder.key \
+        -out certs/logstash-forwarder.crt \
+        -subj /CN=elk
+    register: ssl_cert_out
+
+  - debug: var=ssl_cert_out
+
+  - name: Configure logstash
+    copy:
+      src={{ item }}
+      dest=/etc/logstash/conf.d/{{ item }}
+      owner=root
+      group=root
+    with_items:
+      - logstash_syslog.conf
+      - logstash_collectd.conf
+
+  - name: Start logstash
+    service:
+      name=logstash
+      state=started
+      enabled=yes

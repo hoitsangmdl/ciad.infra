@@ -1,0 +1,79 @@
+---
+
+#- hosts: proxy
+#  strategy: free
+#  sudo: yes
+#  roles:
+#    - { role: common, use_proxy: False }
+#    - yum
+#    - monitored
+#    - squid
+
+- hosts: oracle
+  sudo: yes
+  roles:
+    - { role: common, use_proxy: False }
+    - yum
+    - monitored
+    - oraclexe
+    - { role: oracle-schema, schema_name: scott, schema_password: tiger }
+    - { role: oracle-schema, schema_name: artifactory, schema_password: password }
+    - { role: oracle-schema, schema_name: bitbucket, schema_password: password }
+    - { role: oracle-schema, schema_name: jira, schema_password: password }
+    - { role: oracle-schema, schema_name: sonarqube, schema_password: password }
+
+- hosts: artifactory
+  sudo: yes
+  roles:
+    - { role: common, use_proxy: False }
+    - yum
+    - monitored
+    - openjdk
+    - artifactory
+
+- hosts: jira
+  sudo: yes
+  roles:
+    - { role: common, use_proxy: False }
+    - yum
+    - monitored
+    - oraclejdk
+    - jira
+    - bitbucket
+
+#- hosts: bitbucket
+#  sudo: yes
+#  roles:
+#    - { role: common, use_proxy: False }
+#    - yum
+#    - monitored
+#    - oraclejdk
+#    - bitbucket
+
+- hosts: jenkins
+  sudo: yes
+  roles:
+    - { role: common, use_proxy: False }
+    - yum
+    - monitored
+    - openjdk
+    - jenkins
+    - { role: oraclejdk, jdk_version: '8u65-b17'}
+
+- hosts: elk
+  sudo: yes
+  roles:
+    - { role: common, use_proxy: False }
+    - yum
+    - monitored
+    - openjdk
+    - elk
+#    - nagios
+
+#- hosts: nagios
+#  sudo: yes
+#  roles:
+#    - { role: common, use_proxy: False }
+#    - yum
+#    - monitored
+#    - nagios

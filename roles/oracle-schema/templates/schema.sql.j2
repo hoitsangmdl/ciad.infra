@@ -1,0 +1,11 @@
+set echo on
+spool ./create_schema.log
+
+DROP USER {{ schema_name }} CASCADE;
+
+CREATE USER {{ schema_name }} IDENTIFIED BY {{ schema_password }} DEFAULT TABLESPACE {{ schema_name }}_tbs TEMPORARY TABLESPACE {{ schema_name }}_temp_tbs;
+
+GRANT {{ schema_name }}_role, UNLIMITED TABLESPACE TO {{ schema_name }};
+
+spool off
+/

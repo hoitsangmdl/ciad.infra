@@ -1,0 +1,19 @@
+---
+
+  jira_version: "7.0.5"
+  jira_archive: "atlassian-jira-software-{{jira_version}}-jira-{{jira_version}}.tar.gz"
+  jira_catalina: "/opt/jira/atlassian-jira-software-{{jira_version}}-jira-{{jira_version}}"
+  jira_home: /opt/jira/jira_home
+  jira_jvm_maximum_memory: 768m
+  jira_group: jira
+  jira_username: jira
+  jira_password: password
+  jira_jdbc_driver: 'oracle.jdbc.OracleDriver'
+  jira_jdbc_url: 'jdbc:oracle:thin:@oracle:1521:xe'
+  #jira_jdbc_url: 'jdbc:oracle:thin:@172.25.6.241:1521:jira'
+  jira_jdbc_username: 'jira'
+  jira_jdbc_password: 'password'
+  jira_url: "http://www.atlassian.com/software/jira/downloads/binary/{{jira_archive}}"
+  jira_artifactory_url: "http://artifactory:8081/artifactory/local-generic/atlassian/jira/{{jira_version}}/{{jira_archive}}"
+  artifactory_username: "admin"
+  artifactory_password: "password"

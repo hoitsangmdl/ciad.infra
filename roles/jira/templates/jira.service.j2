@@ -1,0 +1,12 @@
+[Unit]
+Description=Atlassian Jira Service
+After=syslog.target network.target
+   
+[Service]
+Type=forking
+User={{jira_username}}
+ExecStart={{jira_catalina}}/bin/start-jira.sh
+ExecStop={{jira_catalina}}/bin/stop-jira.sh
+   
+[Install]
+WantedBy=multi-user.target

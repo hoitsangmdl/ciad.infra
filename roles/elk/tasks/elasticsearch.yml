@@ -1,0 +1,32 @@
+---
+
+    # ====================
+    # ElasticSearch
+    # --------------------
+
+  - name: Install ElasticSearch
+    yum:
+      name=elasticsearch
+      state=present
+
+  - name: Enable scripting
+    lineinfile: "dest='/etc/elasticsearch/elasticsearch.yml' regexp='^script.engine.*' line='script.engine.groovy.inline.aggs: on'"
+
+  - name: Enable port
+    lineinfile: "dest=/etc/elasticsearch/elasticsearch.yml regexp='^network.host.*' line='network.host: 0.0.0.0'"
+
+  - name: Enable Elastic search service
+    service:
+      name=elasticsearch
+      state=restarted
+      enabled=yes
+
+  - name: Wait for elasticsearch to start
+    command: >
+      timeout 1 bash -c 'cat < /dev/null > /dev/tcp/localhost/9200'
+    register: els_check_result
+    until: els_check_result.rc == 0
+    retries: 60
+    delay: 5
+
+  - debug: var=els_check_result

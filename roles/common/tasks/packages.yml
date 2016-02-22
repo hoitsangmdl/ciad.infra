@@ -1,0 +1,17 @@
+---
+
+  ##=================================
+  # required for making world easier
+  #----------------------------------
+
+  - name: load wget, unzip, net-tools
+    shell: >
+      export http_proxy=http://{{proxy_host}}:{{proxy_port}} &&
+        yum clean all && yum install wget unzip net-tools -y
+    when: use_proxy|bool
+
+  - name: load wget, unzip, net-tools without proxy
+    shell: >
+      unset http_proxy &&
+        yum clean all && yum install wget unzip net-tools -y
+    when: not use_proxy|bool

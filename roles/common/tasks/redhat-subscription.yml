@@ -1,0 +1,24 @@
+---
+  
+  # =========================================
+  # redhat subscription could be unnecessary
+  # -----------------------------------------
+
+  - name: if subscription-manager exist
+    command: which subscription-manager
+    ignore_errors: True
+    register: cmd_smcheck
+
+  - name: disable rehdat subscription manager
+    shell: subscription-manager config --rhsm.manage_repos=0
+    when: not use_redhat_subscription|bool and cmd_smcheck.rc == 0
+
+  - name: enable redhat subscription manager
+    shell: subscription-manager config --rhsm.manage_repos=1
+    when: use_redhat_subscription|bool and cmd_smcheck.rc == 0
+
+  - name: disable firewall
+    shell:
+      systemctl disable firewalld &&
+        systemctl stop firewalld
+    when: disable_firewall|bool

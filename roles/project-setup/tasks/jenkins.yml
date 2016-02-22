@@ -1,0 +1,13 @@
+---
+
+  - name: setup jenkins dsl job
+    jenkins_dsljob:
+      project_key: "{{project_key}}"
+      scm_host: "{{scm_host}}"
+      scm_port: "{{scm_port}}"
+      repo_name: "{{item}}"
+      api_url: "{{jenkins_url}}"
+      api_username: "{{api_username}}"
+      api_password: "{{api_password}}"
+    when: '"jobdsl" in item'
+    with_items: "{{project_template_names}}"

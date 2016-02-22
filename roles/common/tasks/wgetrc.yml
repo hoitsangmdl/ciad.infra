@@ -1,0 +1,29 @@
+---
+    #===============
+  # /root/.wgetrc
+  # --------------
+
+  - name: setup proxy for wget
+    lineinfile:
+      dest="~/.wgetrc"
+      line="{{item.line}}"
+      regexp="{{item.regex}}"
+      create=True
+    with_items:
+      - {line: "use_proxy=yes", regex: "^use_proxy=.*"}
+      - {line: "http_proxy={{proxy_host}}:{{proxy_port}}", regex: "^http_proxy=.*"}
+      - {line: "https_proxy={{proxy_host}}:{{proxy_port}}", regex: "^https_proxy=.*"}
+      - {line: "no_proxy=localhost,127.0.0.0/8,127.0.1.1,127.0.1.1*,local.home,artifactory", regex: "^no_proxy=.*"}
+    when: use_proxy|bool
+
+  - name: disable wget proxy
+    lineinfile:
+      dest="~/.wgetrc"
+      regexp="{{item.regex}}"
+      state="{{item.state}}"
+    with_items:
+      - {regex: "^use_proxy=.*", state: "absent"}
+      - {regex: "^http_proxy=.*", state: "absent"}
+      - {regex: "^https_proxy=.*", state: "absent"}
+      - {regex: "^no_proxy=.*", state: "absent"}
+    when: not use_proxy|bool

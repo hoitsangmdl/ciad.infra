@@ -1,0 +1,20 @@
+---
+
+  bitbucket_version: "4.1.3"
+  bitbucket_archive: "atlassian-bitbucket-{{bitbucket_version}}.tar.gz"
+  bitbucket_catalina: "/opt/bitbucket/{{bitbucket_version}}"
+  bitbucket_connector_port: 7990
+  bitbucket_home: /opt/bitbucket/bitbucket_home
+  bitbucket_jvm_maximum_memory: 768m
+  bitbucket_jvm_minimum_memory: 512m
+  bitbucket_jvm_support_recommended_args: -Datlassian.plugins.enable.wait=300
+  bitbucket_username: bitbucket
+  bitbucket_group: bitbucket
+  bitbucket_jdbc_driver: 'oracle.jdbc.OracleDriver'
+  bitbucket_jdbc_url: 'jdbc:oracle:thin:@oracle:1521:xe'
+  bitbucket_jdbc_username: 'bitbucket'
+  bitbucket_jdbc_password: 'password'
+  bitbucket_url: "https://downloads.atlassian.com/software/stash/downloads/{{bitbucket_archive}}"
+  bitbucket_artifactory_url: "http://artifactory:8081/artifactory/local-generic/atlassian/bitbucket/{{bitbucket_version}}/{{bitbucket_archive}}"
+  artifactory_username: "admin"
+  artifactory_password: "password"

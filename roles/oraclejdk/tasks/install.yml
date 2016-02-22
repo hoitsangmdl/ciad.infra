@@ -1,0 +1,31 @@
+---
+
+  # ===============
+  # update symlink
+  # ---------------
+
+  - name: check if /opt/jdk/current symlink exist
+    stat: path={{jdk_install_base}}/current
+    register: cmd_current_symlink_exist
+
+  - name: set /opt/jdk/current symlink
+    file: state=link src={{jdk_install_path}} dest={{jdk_install_base}}/current
+    when: not cmd_current_symlink_exist.stat.exists or {{register_current_symlink}}
+
+  - name: ensure alternative symlink exist
+    file: state=link src=/opt/jdk/current/bin/java dest=/etc/alternatives/java force=no
+
+  # ============
+  # env profile
+  # ------------
+
+  - name: create /etc/profile.d/jdk.sh
+    template: src=./templates/jdk.sh dest=/etc/profile.d/jdk.sh mode=0644 force=no
+
+  - name: check java version
+    shell: /opt/jdk/current/bin/java -version
+    register: cmd_java_ver
+
+  - assert:
+      that:
+        - '"Java HotSpot" in cmd_java_ver.stderr'

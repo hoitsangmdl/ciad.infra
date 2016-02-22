@@ -1,0 +1,9 @@
+[elastic-2.x-elasticsearch]
+name=elastic-2.x-elasticsearch
+baseurl=http://artifactory:8081/artifactory/elastic-2.x-elasticsearch
+enabled=1
+
+[elastic-2.1-logstash]
+name=elastic-2.1-logstas
+baseurl=http://artifactory:8081/artifactory/elastic-2.1-logstas
+enabled=1

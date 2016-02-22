@@ -1,0 +1,5 @@
+[jenkins-table]
+name=Jenkins Stable
+baseurl=http://artifactory:8081/artifactory/jenkins-stable/
+enabled=1
+gpgcheck=0

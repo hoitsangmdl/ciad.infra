@@ -1,0 +1,57 @@
+---
+
+  - name: check if /opt/jdk/[version]/release exists
+    stat: path={{jdk_install_path}}/release
+    register: cmd_installed
+
+  # ====================
+  # download and unpack
+  # --------------------
+  - name: create local-generic artifactory repo
+    sudo: no
+    delegate_to: localhost
+    artifactory_repo:
+      state="present"
+      api_url="{{artifactory_api_url}}"
+      api_username="{{artifactory_api_username}}"
+      api_password="{{artifactory_api_password}}"
+      rclass="local"
+      repo_key="local-generic"
+      package_type="generic"
+
+  - name: cache jdk archive into artifactory
+    sudo: no
+    delegate_to: localhost
+    artifactory_fetch:
+      repo_item_url: "{{jdk_repo_url}}"
+      repo_username: "{{artifactory_api_username}}"
+      repo_password: "{{artifactory_api_password}}"
+      local_path: '/tmp/jdk-8u65-linux-x64.tar.gz'
+      refresh: false
+      fetch_cmd: >
+        wget -c {{jdk_download_url}}
+          -v
+          --timeout=10
+          --no-check-certificate
+          --no-cookie -P /tmp
+          --header "Cookie: oraclelicense=accept-securebackup-cookie"
+
+  - name: download jdk archive from repo to /tmp
+    command: >
+      wget -c {{jdk_repo_url}}
+        --timeout=10
+        --no-check-certificate
+        --no-cookie -P /tmp
+    when: not cmd_installed.stat.exists
+    register: cmd_download_succeed
+
+  - name: create /opt/jdk/[version] directory
+    file: path={{jdk_install_path}} state=directory
+
+  - name: unpack jdk archive into /opt/jdk/[version]
+    command: >
+      tar
+        -C {{jdk_install_path}}
+        -xzf /tmp/{{jdk_archive}}
+        --strip-components=1
+    when: not cmd_installed.stat.exists and cmd_download_succeed.rc == 0

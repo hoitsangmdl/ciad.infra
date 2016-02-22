@@ -1,0 +1,17 @@
+---
+    # java proxy setting - resolved at runtime
+    # from  /etc/profile.d/proxy.sh
+  jenkins_java_opts: ' ${_JAVA_OPTIONS} '
+
+  jenkins_plugins:
+  -  git
+  -  sonar
+  -  ssh
+  -  active-directory
+  -  job-dsl
+
+  jenkins_artifactory_username: 'jenkins'
+  jenkins_artifactory_password: '.jenkins'
+  artifactory_api_url: "http://artifactory:8081/artifactory/api"
+  artifactory_api_username: "admin"
+  artifactory_api_password: "password"

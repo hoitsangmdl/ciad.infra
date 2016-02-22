@@ -1,0 +1,14 @@
+---
+
+  centos: True
+  use_redhat_subscription: False
+  jdk_version: '8u65-b17'
+  jdk_install_base: "/opt/jdk"
+  jdk_install_path: "{{jdk_install_base}}/{{jdk_version}}"
+  jdk_archive: "jdk-{{jdk_version.split('-')[0]}}-linux-{{ansible_architecture.replace('86_','')}}.tar.gz"
+  jdk_download_url: "http://download.oracle.com/otn-pub/java/jdk/{{jdk_version}}/{{jdk_archive}}"
+  register_current_symlink: False
+  jdk_repo_url: "http://artifactory:8081/artifactory/local-generic/oracle/jdk/jdk-8u65/jdk-8u65-linux-x64.tar.gz"
+  artifactory_api_url: http://artifactory:8081/artifactory/api
+  artifactory_api_username: "admin"
+  artifactory_api_password: "password"
