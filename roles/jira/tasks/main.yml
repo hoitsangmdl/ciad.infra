@@ -103,7 +103,7 @@
       - { line: 'source /etc/profile.d/jdk.sh', regex: '^source\ /etc/profile.d/jdk.sh'}
       - { line: 'source /etc/profile.d/proxy.sh', regex: '^source\ /etc/profile.d/proxy.sh'}
       - { line: "JVM_MAXIMUM_MEMORY={{jira_jvm_maximum_memory}}", regex: "^JVM_MAXIMUM_MEMORY="}
-      - { line: 'JAVA_OPTS="-Xms${JVM_MINIMUM_MEMORY} -Xmx${JVM_MAXIMUM_MEMORY} ${_JAVA_OPTIONS} ${JAVA_OPTS} ${JVM_REQUIRED_ARGS} ${DISABLE_NOTIFICATIONS} ${JVM_SUPPORT_RECOMMENDED_ARGS} ${JVM_EXTRA_ARGS} ${JIRA_HOME_MINUSD}"', regex: "^JAVA_OPTS="}
+      - { line: 'JAVA_OPTS=\"-Xms${JVM_MINIMUM_MEMORY} -Xmx${JVM_MAXIMUM_MEMORY} ${_JAVA_OPTIONS} ${JAVA_OPTS} ${JVM_REQUIRED_ARGS} ${DISABLE_NOTIFICATIONS} ${JVM_SUPPORT_RECOMMENDED_ARGS} ${JVM_EXTRA_ARGS} ${JIRA_HOME_MINUSD}\"', regex: "^JAVA_OPTS="}
 
 
   # ========

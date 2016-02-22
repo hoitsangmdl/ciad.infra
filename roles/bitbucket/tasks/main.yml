@@ -105,8 +105,8 @@
   - name: update setenv.sh
     lineinfile:
       dest={{bitbucket_catalina}}/bin/setenv.sh
-      line={{item.line}}
-      regexp={{item.regex}}
+      line="{{item.line}}"
+      regexp="{{item.regex}}"
       backup=yes
       state=present
       insertafter='^#!/usr/bin/env bash'
