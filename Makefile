@@ -10,8 +10,12 @@ restartvb:
 	sudo /Library/Application\ Support/VirtualBox/LaunchDaemons/VirtualBoxStartup.sh restart
 
 
+monitored:
+	ansible-playbook compact.yml \
+        -i ./.vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory --tags monitored
+
 setup_inventory:
-	cat /etc/ansible/hosts >> ./.vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory
+	echo "[local]\nlocalhost ansible_connection=local" >> ./.vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory
 
 template_setup:
 	ansible-playbook -c local template_setup.yml \

@@ -5,7 +5,7 @@
   roles:
     - { role: common, use_proxy: False }
     - yum
-    - { role: monitored, include_host: artifactory }
+    - { role: monitored, include_hosts: ["artifactory"]}
     - oraclexe
     - { role: oracle-schema, schema_name: scott, schema_password: tiger }
     - { role: oracle-schema, schema_name: artifactory, schema_password: password }
@@ -20,7 +20,7 @@
   roles:
     - { role: common, use_proxy: False }
     - yum
-    - { role: monitored, include_host: bitbucket }
+    - { role: monitored, include_hosts: ["bitbucket"] }
     - oraclejdk
     - jira
     - bitbucket
@@ -40,7 +40,7 @@
   roles:
     - { role: common, use_proxy: False }
     - yum
-    - { role: monitored, include_host: nagios }
+    - { role: monitored, include_hosts: ["nagios"] }
     - openjdk
     - elk
     - nagios

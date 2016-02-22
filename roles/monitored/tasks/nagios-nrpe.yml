@@ -8,11 +8,13 @@
     retries: 3
     delay: 1
     ignore_errors: yes
+    tags: monitored
 
   - debug: var=nagios_check_result
 
   - name: set facts
     set_fact: nagios_up="{{ nagios_check_result.rc == 0 }}"
+    tags: monitored
 
   - debug: var=nagios_up
 
@@ -24,9 +26,11 @@
     retries: 3
     delay: 1
     ignore_errors: yes
+    tags: monitored
 
   - name: set artifactory up facts
     set_fact: artifactory_up="{{ artifactory_check_result.rc == 0 }}"
+    tags: monitored
 
   - debug: var=artifactory_up
 
@@ -39,6 +43,7 @@
       - nagios-plugins-all
     when: nagios_up and artifactory_up
     register: nrpe_install_result
+    tags: monitored
 
 #  - debug: var=nrpe_install_result
 #  - set_fact: nrpe_installed="{{nrpe_install_result.changed}}"
@@ -50,6 +55,7 @@
       line="allowed_hosts=127.0.0.1,10.0.2.0/24,192.168.100.0/24"
     when: nagios_up
 #    when: nagios_up and nrpe_installed
+    tags: monitored
 
   - name: Ensure check all disk command exists
     lineinfile:
@@ -58,6 +64,7 @@
       line="command[check_all_disks]=/usr/lib64/nagios/plugins/check_disk -w 20 -c 10"
     when: nagios_up
 #    when: nagios_up and nrpe_installed
+    tags: monitored
 
   - set_fact: host_name="{{ansible_hostname}}"
 
@@ -70,6 +77,7 @@
     when: nagios_up
     register: host_specific_nrpe
     ignore_errors: yes
+    tags: monitored
 
   - name: Copy nrpe check config to nagios host
     delegate_to: nagios
@@ -77,19 +85,18 @@
       src=nrpe_node.cfg.j2
       dest=/etc/nagios/conf.d/{{ ansible_hostname }}.cfg
     when: nagios_up and not host_specific_nrpe.changed
-#    when: nagios_up and not host_specific_nrpe.changed and nrpe_installed
-
-  - set_fact: host_name="{{include_host}}"
-    when: include_host is defined
+    tags: monitored
 
   - name: Copy include_host specific nrpe config file if exist
     delegate_to: nagios
     template:
-      src={{ include_host }}.cfg.j2
-      dest=/etc/nagios/conf.d/{{ include_host }}.cfg
-    when: nagios_up and include_host is defined
+      src={{ item }}.cfg.j2
+      dest=/etc/nagios/conf.d/{{ item }}.cfg
+    with_items: include_hosts
+    when: nagios_up and include_hosts is defined
     register: include_host_cfg
     ignore_errors: yes
+    tags: monitored
 
   - name: restart start nrpe service
     service:
@@ -98,6 +105,7 @@
       enabled=yes
     when: nagios_up
 #    when: nagios_up and nrpe_installed
+    tags: monitored
 
   - name: restart nagios service
     delegate_to: nagios
@@ -106,3 +114,4 @@
       state=restarted
     when: nagios_up
 #    when: nagios_up and nrpe_installed
+    tags: monitored

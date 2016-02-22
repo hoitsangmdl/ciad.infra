@@ -16,7 +16,7 @@ There are also 2 Vagrantfile, and please use a symlink to shortcut into the prop
 By defailt it is set to Vagrantfile.compact.
 
     1. Vagrantfile.master - 7 VMs (oracle, artifactory, jira, bitbucket, elk, nagios, jenkins)
-    2. Vagrantfile.compact - 4 VMs (oracle + artifactory, jira + bitbucket, elk + nagios, jenkins)
+    2. Vagrantfile.compact - 4 VMs (oracle, artifactory + jira + bitbucket, elk + nagios, jenkins)
 
 Please also be aware that:
 
