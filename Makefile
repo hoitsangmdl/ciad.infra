@@ -28,6 +28,7 @@ template_setup:
 	-i ./.vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory 
 
 project_setup:
+	export ANSIBLE_HOST_KEY_CHECKING=false && \
 	ansible-playbook -c local project.yml \
 	-i ./.vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory \
 	-e "project_key='$(PROJECT_KEY)' project_name='$(PROJECT_SLUG)'" 
