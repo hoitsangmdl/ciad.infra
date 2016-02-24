@@ -44,4 +44,4 @@ destroy:
 
 reload:
 	rm -rf env jira && make destroy
-	time sh -c 'export PROJECT_KEY="HOIA" && export PROJECT_SLUG="Project A for Hoi" && sudo make pyaddon && make setup up && sleep 60 && make template_setup project_setup'
+	time sh -c 'export PROJECT_KEY="HOIA" && export PROJECT_SLUG="Project A for Hoi" && sudo make pyaddon && make setup up && sleep 90 && make template_setup project_setup'
