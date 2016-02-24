@@ -76,6 +76,14 @@ def create_project(params):
   headers = {"Content-type": "application/json"}
   return requests.post(api_url, auth=api_auth, data=payload, headers=headers)
 
+def public_accessible(params):
+  payload = json.dumps({'public': True})
+  api_url = "{0}/rest/api/latest/projects/{1}".format(
+              params['api_url'], params['key'])
+  api_auth = (params["api_username"], params["api_password"])
+  headers = {"Content-type": "application/json"}
+  return requests.put(api_url, auth=api_auth, data=payload, headers=headers)
+
 def main():
   m = AnsibleModule(
     argument_spec = dict(
@@ -85,6 +93,7 @@ def main():
       api_url = dict(required=True),
       api_username = dict(required=True),
       api_password = dict(required=True),
+      public_accessible = dict(required=False, default=False)
     ))
   p = m.params
   r, exists = project_exists(p)
@@ -98,6 +107,10 @@ def main():
 
   r = create_project(p)
   if r.status_code in (200, 201):
+    if p['public_accessible']:
+      r = public_accessible(p)
+      if r.status_code not in (200, 201):
+        m.fail_json(msg='Project created but failed to setup public accessble permission', rc=1)
     m.exit_json(
       changed=True,
       stdout=r.content,
