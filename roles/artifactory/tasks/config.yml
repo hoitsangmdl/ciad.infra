@@ -29,3 +29,9 @@
       src=oracle.properties.j2
       dest={{artifactory_home}}/etc/storage.properties
       backup=yes
+
+  - name: transfer over license file
+    copy:
+      src=artifactory.lic
+      dest={{artifactory_home}}/etc/artifactory.lic
+      

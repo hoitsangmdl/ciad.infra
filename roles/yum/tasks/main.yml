@@ -8,7 +8,7 @@
       timeout 1 bash -c "cat < /dev/null > /dev/tcp/artifactory/8081"
     register: artifactory_check_result
     until: artifactory_check_result.rc == 0
-    retries: 3
+    retries: 5
     delay: 1
     ignore_errors: yes
     tags: local_repo
@@ -17,21 +17,6 @@
     set_fact:
       artifactory_up="{{ artifactory_check_result.rc == 0}}"
     tags: local_repo
-
-  - debug: var=artifactory_up
-
-#  - name: remove repo in artifactory
-#    sudo: no
-#    delegate_to: localhost
-#    artifactory_repo:
-#      state=absent
-#      api_url="{{api_url}}"
-#      api_username="{{api_username}}"
-#      api_password="{{api_password}}"
-#      repo_key="{{item.repo_key}}"
-#    with_items: artifactory_repos
-#    run_once: true
-#    when: recreate_repo and artifactory_up
 
   - name: create remote remote repos in artifactory
     sudo: no
@@ -68,7 +53,7 @@
   # add references to artifactory yum repos
   # ----------------------------------------
 
-  - name: create new yum entries pointing to artifactory
+  - name: create new local yum repo entries pointing to artifactory
     yumrepo:
       name={{item.repo_key}}
       baseurl="{{artifactory_repo_base_url}}/{{item.repo_key}}"

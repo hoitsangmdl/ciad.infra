@@ -19,12 +19,10 @@ monitored:
 	ansible-playbook compact.yml \
         -i ./.vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory --tags monitored
 
-setup_inventory:
-	echo "[local]\nlocalhost ansible_connection=local" >> ./.vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory
-
 template_setup:
+	echo "[local]\nlocalhost ansible_connection=local" >> ./.vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory
 	export ANSIBLE_HOST_KEY_CHECKING=false && \
-	ansible-playbook -c local template_setup.yml \
+	ansible-playbook -c local template.yml \
 	-i ./.vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory 
 
 project_setup:
@@ -33,5 +31,8 @@ project_setup:
 	-i ./.vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory \
 	-e "project_key='$(PROJECT_KEY)' project_name='$(PROJECT_SLUG)'" 
 
-test_jenkins:
-	ansible jenkins -i ./.vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory -a "ls -l" -vvvv
+up:
+	. env/bin/activate && vagrant up oracle elk jenkins jira
+
+destroy:
+	. env/bin/activate && vagrant destroy oracle elk jenkins jira -f

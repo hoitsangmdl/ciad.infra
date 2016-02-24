@@ -1,0 +1,9 @@
+set echo on
+spool ./create_datadump.log
+
+CREATE OR REPLACE DIRECTORY {{schema_name}}_datadump AS '/tmp';
+
+GRANT READ, WRITE ON DIRECTORY {{schema_name}}_datadump TO {{schema_name}};
+
+spool off
+/
