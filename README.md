@@ -62,7 +62,14 @@ Last, some of the playbook require API interaction from local machine to the VM.
 2. Start up Toolchain
 -----------
 
-    source env/bin/activate && vagrant up oracle elk jenkins elk
+    source env/bin/activate && vagrant up oracle elk jenkins jira
+
+In the events of provisioning errors (except oracle), please run the provisioning command:
+
+    source env/bin/activate && vagrant provision elk jenkins jira
+
+The script is wrritten as idempotent. Most of the errors encountered due to network connectivity.
+
 
 3. Register Project Templates 
 --------------------------
