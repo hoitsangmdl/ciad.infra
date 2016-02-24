@@ -4,18 +4,21 @@ CIAD.INFRA
 This is a concept reference implementation for automating CICD toolchain setup, and cookie-cutting a working sample application with build/release/deploy tasks. It's written in ansible, python, and vagrant.
 
 The CICD toolchain includes:
-    1. OracleXE, Artifactory
-    2. JIRA, BitBucket, and Jenkins.
-    3. ELK and Nagios for reporting and monitoring.
+
+1. OracleXE, Artifactory
+2. JIRA, BitBucket, and Jenkins.
+3. ELK and Nagios for reporting and monitoring.
 
 The project template includes:
-    1. A 'HelloWorld' simple java web application
-    2. Deployment task (including provisioning a Tomcat VM)
-    3. Jenkins JobDSL sample to generate build,release,deployment jobs
+
+1. A 'HelloWorld' simple java web application
+2. Deployment task (including provisioning a Tomcat VM)
+3. Jenkins JobDSL sample to generate build,release,deployment jobs
 
 Please also be aware that:
-    1. Default login for all system: admin/password
-    2. Ensure the Project Template is "public readable" (under 'Register Project Templates') step
+
+1. Default login for all system: admin/password
+2. Ensure the Project Template is "public readable" (under 'Register Project Templates') step
 
 
 1. Setup
@@ -24,10 +27,10 @@ Please also be aware that:
 
 To run this RI, please ensure you have 10gb ram and 20gb disk space. The following softwares are required:
 
-    1. [Oracle VirtualBox](https://www.virtualbox.org/wiki/Downloads)
-    2. [Vagrant](https://www.vagrantup.com/downloads.html)
-    3. Python 2.7.x - You should have this by default in the OS (linux or mac).
-    4. [OracleXE database](http://technet.oracle.com), and place the RPM file (e.g. oracle-xe-11.2.0-1.0.x86_64.rpm) into ./roles/oraclexe/files/oracle-xe-11.2.0-1.0.x86_64.rpm
+1. [Oracle VirtualBox](https://www.virtualbox.org/wiki/Downloads)
+2. [Vagrant](https://www.vagrantup.com/downloads.html)
+3. Python 2.7.x - You should have this by default in the OS (linux or mac).
+4. [OracleXE database](http://technet.oracle.com), and place the RPM file (e.g. oracle-xe-11.2.0-1.0.x86_64.rpm) into ./roles/oraclexe/files/oracle-xe-11.2.0-1.0.x86_64.rpm
 
 **2. Pip, virtualenv, and python libraries**
 
@@ -53,15 +56,13 @@ Last, some of the playbook require API interaction from local machine to the VM.
     192.168.100.18   nagios
     192.168.100.50   tomcat
 
-2. Start up
+2. Start up Toolchain
 -----------
-All commands will be running within the same session after activating virtualenv.
 
     source env/bin/activate && vagrant up oracle elk jenkins elk
 
-3. Register Project Templates
+3. Register Project Templates 
 --------------------------
-**1. Setup Inventory**
 
     source env/bin/activate && make template_setup
 
