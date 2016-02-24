@@ -4,7 +4,6 @@ Vagrant.configure("2") do |config|
   config.vm.synced_folder ".", "/home/vagrant/sync", disabled: true
   config.ssh.insert_key = false
   config.vm.provider :virtualbox do |vb|
-    vb.customize ["modifyvm", :id, "--memory", "1536"]
     vb.customize ["modifyvm", :id, "--cpus", "2"]
   end
 
@@ -18,8 +17,6 @@ Vagrant.configure("2") do |config|
     v.vm.provision "ansible" do |ansible|
       ansible.playbook = "compact.yml"
       ansible.limit = "oracle"
-#      ansible.raw_ssh_args = ['-o ControlMaster=no']
-      ansible.verbose = "vv"
     end
   end
 
@@ -33,8 +30,6 @@ Vagrant.configure("2") do |config|
     v.vm.provision "ansible" do |ansible|
       ansible.playbook = "compact.yml"
       ansible.limit = "jira"
-#      ansible.raw_ssh_args = ['-o ControlMaster=no']
-      ansible.verbose = "vv"
     end
   end
 
@@ -47,8 +42,6 @@ Vagrant.configure("2") do |config|
     v.vm.provision "ansible" do |ansible|
       ansible.playbook = "compact.yml"
       ansible.limit = "jenkins"
-#      ansible.raw_ssh_args = ['-o ControlMaster=no']
-      ansible.verbose = "vv"
     end
   end
 
@@ -62,8 +55,6 @@ Vagrant.configure("2") do |config|
     v.vm.provision "ansible" do |ansible|
       ansible.playbook = "compact.yml"
       ansible.limit = "elk"
-#      ansible.raw_ssh_args = ['-o ControlMaster=no']
-      ansible.verbose = "vv"
     end
   end
 

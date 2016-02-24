@@ -1,49 +1,35 @@
-Overview
+CIAD.INFRA
 ----------
 
-This is a concept reference implementation for automating CICD toolchain setup, and cookie-cutting a working sample application plus related CICD tasks. It's written with ansible, python, and vagrant.
+This is a concept reference implementation for automating CICD toolchain setup, and cookie-cutting a working sample application with build/release/deploy tasks. It's written in ansible, python, and vagrant.
 
 The CICD toolchain includes:
+    1. OracleXE, Artifactory
+    2. JIRA, BitBucket, and Jenkins.
+    3. ELK and Nagios for reporting and monitoring.
 
-    1. JIRA, BitBucket, Artifactory, and Jenkins.
-    2. OracleXE database and Proxy (squid) server.
-    3. Elasticsearch, Logstash, Collectd, and Nagios for reporting and monitoring.
-    4. Tomcat - just a sample web container to run helloworld from sample code
-
-The database serve as backend for JIRA, BitBucket, and Artifactory. The Proxy server mimic a corporate environment (not enable by default). Sample project templates also included.
-
-There are also 2 Vagrantfile, and please use a symlink to shortcut into the proper Vagrantfile as selection.
-By defailt it is set to Vagrantfile.compact.
-
-    1. Vagrantfile.master - 7 VMs (oracle, artifactory, jira, bitbucket, elk, nagios, jenkins)
-    2. Vagrantfile.compact - 4 VMs (oracle, artifactory + jira + bitbucket, elk + nagios, jenkins)
+The project template includes:
+    1. A 'HelloWorld' simple java web application
+    2. Deployment task (including provisioning a Tomcat VM)
+    3. Jenkins JobDSL sample to generate build,release,deployment jobs
 
 Please also be aware that:
-
     1. Default login for all system: admin/password
     2. Ensure the Project Template is "public readable" (under 'Register Project Templates') step
 
+
 1. Setup
 -----
-**1. Required runtimes**
+**1. Prerequisites software**
 
-To run this RI, please ensure you have 16gb ram and 100gb disk space. The following softwares are required:
+To run this RI, please ensure you have 10gb ram and 20gb disk space. The following softwares are required:
 
-- [Oracle VirtualBox](https://www.virtualbox.org/wiki/Downloads)
-- [Vagrant](https://www.vagrantup.com/downloads.html)
-- Python 2.7.x - You should have this by default in the OS (linux or mac).
+    1. [Oracle VirtualBox](https://www.virtualbox.org/wiki/Downloads)
+    2. [Vagrant](https://www.vagrantup.com/downloads.html)
+    3. Python 2.7.x - You should have this by default in the OS (linux or mac).
+    4. [OracleXE database](http://technet.oracle.com), and place the RPM file (e.g. oracle-xe-11.2.0-1.0.x86_64.rpm) into ./roles/oraclexe/files/oracle-xe-11.2.0-1.0.x86_64.rpm
 
-**2. Vagrant Image**
-
-Please also ensure you have CentOS7 vagrant box installed. This RI is built with hashicorp centos7 image. Other CentOS7 base image should work.
-
-    vagrant box add 'centos/7' http://cloud.centos.org/centos/7/vagrant/x86_64/images/CentOS-7-Vagrant-1505-x86_64-01.box
-
-**3. OracleXE rpm**
-
-You will need to download [OracleXE database](http://technet.oracle.com), and place the RPM file (e.g. oracle-xe-11.2.0-1.0.x86_64.rpm) into ./roles/oraclexe/files/oracle-xe-11.2.0-1.0.x86_64.rpm
-
-**4. Pip and virtualenv**
+**2. Pip, virtualenv, and python libraries**
 
 Please ensure you have **pip** and **virtualenv** installed. If unsure, please run the following to install pip and virtualenv:
 
@@ -53,9 +39,9 @@ To start after checkout the application, run the following to setup **virtualenv
 
     make setup
 
-**5. /etc/hosts**
+**3. /etc/hosts**
 
-Some of the playbook require API interaction from local machine to the VM. The following DNS alias entries are required:
+Last, some of the playbook require API interaction from local machine to the VM. The following DNS alias entries are required (e.g. add into /etc/hosts)
 
     192.168.100.11   proxy
     192.168.100.12   oracle
@@ -69,99 +55,24 @@ Some of the playbook require API interaction from local machine to the VM. The f
 
 2. Start up
 -----------
-**1. Activate python virtualenv**
+All commands will be running within the same session after activating virtualenv.
 
-This step will inject current the python runtime located at "{project folder}/env/bin/python" into \${PATH} variable ahead of default python runtime. All the python dependencies for projects (under **make setup** step) are installed in {project folder}/env/lib/python/site-packages".
-
-    source ./env/bin/activate
-
-**2. Startup orders (for Vagrantfile.master):**
-
-The VMs in the toolchain have dependencies. They need to be started in the following orders:
-
-    # 1. install oracle and artifactory
-    vagrant up oracle artifactory
-
-    # 2. register license into artifactory manually
-    # visit http://artifactory:8081
-
-    # 3. repoint both oracle and artifactory to use artifactory as yum repo
-    vagrant provision oracle artifactory
-
-    # 4. setup nagios and elk
-    vagrant up nagios elk
-
-    # 5. repoint systems to nagios and elk for monitoring
-    vagrant provision oracle artifactory nagios elk
-
-    # visit http://nagios/nagios
-    # visit http://elk:5601/
-
-    # 6. setup jira bitbucket jenkins
-    vagrant up jira bitbucket jenkins
-
-    # 7. manually register jira and bitbucket
-    # visit http://jira:8080
-    # visit http://bitbucket:7990
-
-**3. Startup orders (for Vagrantfile.compact):**
-
-The VMs in the toolchain have dependencies. They need to be started in the following orders:
-
-    # 1. install oracle + artifactory
-    vagrant up oracle
-
-    # 2. register license into artifactory manually
-    # visit http://artifactory:8081
-
-    # 3. repoint both oracle and artifactory to use artifactory as yum repo
-    vagrant provision oracle
-
-    # 4. setup nagios and elk
-    vagrant up elk
-
-    # 5. repoint systems to nagios and elk for monitoring
-    vagrant provision oracle elk
-
-    # visit http://nagios/nagios
-    # visit http://elk:5601/
-
-    # 6. setup jira bitbucket jenkins
-    vagrant up jira jenkins
-
-    # 7. manually register jira and bitbucket
-    # visit http://jira:8080
-    # visit http://bitbucket:7990
-
+    source env/bin/activate && vagrant up oracle elk jenkins elk
 
 3. Register Project Templates
 --------------------------
 **1. Setup Inventory**
-In vagrant generated inventory file (./.vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory), ensure the [local] connection exists:
 
-    [local]
-    localhost ansible_connection=local
+    source env/bin/activate && make template_setup
 
-**2. Setup Template**
-This step will upload sample templates (helloworld, helloworld-jobdsl, helloworld-deploy) into bitbucket
-
-    make template_setup
-
-After this step, visit http://bitbucket:7990/projects/PROJTMPL/
-
-**3. Ensure the Project Template is "public readable" in project repo settings**
-Or else the followings will fail.
+After this step, visit http://bitbucket:7990/projects/PROJTMPL/, and Ensure the Project Template is "public readable" in project repo settings
 
 4. Create Sample Project
 -----------------------
-**1. Setup Sample Projects**
-In your shell environment, export the following environment variables:
+**1. export the following environment variables and run command**
 
     export PROJECT_KEY="HOIA"
     export PROJECT_SLUG="Project A for Hoi"
-
-After that, in the same shell, run the following command:
-
     make project_setup
 
 After this step, visit generated artifacts:
@@ -178,9 +89,7 @@ In Jenkins, manually build the project:
 
 **3. Startup Dev runtime (Tomcat)**
 
-In local shell, check out bitbucket:7990/projects/HOIA/repos/helloworld-deploy/.
-Go into the checked out directory, use the included Vagrantfile to startup tomcat.
-
+    git clone http://bitbucket:7990/projects/HOIA/repos/helloworld-deploy/
     cd [helloworld-deploy] && vagrant up
 
 Visit: http://tomcat:8080/HelloWorld, you should see 404 page not found.

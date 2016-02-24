@@ -1,7 +1,0 @@
-cd /Users/hoitsang/projects/githuben/ciad.infra
-. env/bin/activate
-ansible-playbook \
-  -c local \
-  -i inventories/vagrant/inventory \
-  project.yml \
-  -e "project_key=$PROJECT_KEY project_name='$PROJECT_SLUG'"
