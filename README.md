@@ -64,7 +64,7 @@ Last, some of the playbook require API interaction from local machine to the VM.
 
     source env/bin/activate && vagrant up oracle elk jenkins jira
 
-In the events of provisioning errors (except oracle), please run the provisioning command:
+In the events of provisioning errors, please run the provisioning command:
 
     source env/bin/activate && vagrant provision elk jenkins jira
 
