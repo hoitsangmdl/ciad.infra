@@ -1,6 +1,8 @@
 CIAD.INFRA
 ----------
 
+__** YOU WILL NEED TO OBTAIN YOUR OWN SOFTWARE LICENSES! **__
+
 This is a concept reference implementation for automating CICD toolchain setup, and cookie-cutting a working sample application with build/release/deploy tasks. It's written in ansible, python, and vagrant.
 
 The CICD toolchain includes:
