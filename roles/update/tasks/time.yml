@@ -1,0 +1,6 @@
+---
+  - name: Ensure time is updated
+    yum: name=ntp state=present
+
+  - service: name=ntpd state=restarted
+  - command: ntpq -p

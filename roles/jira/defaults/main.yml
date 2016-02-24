@@ -1,7 +1,8 @@
 ---
 
-  jira_version: "7.0.5"
+  jira_version: "7.0.10"
   jira_archive: "atlassian-jira-software-{{jira_version}}-jira-{{jira_version}}.tar.gz"
+#  jira_archive: "atlassian-jira-software-{{jira_version}}-jira-{{jira_version}}-x64.bin"
   jira_catalina: "/opt/jira/atlassian-jira-software-{{jira_version}}-jira-{{jira_version}}"
   jira_home: /opt/jira/jira_home
   jira_jvm_maximum_memory: 768m

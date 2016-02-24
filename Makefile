@@ -19,10 +19,8 @@ monitored:
 	ansible-playbook compact.yml \
         -i ./.vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory --tags monitored
 
-setup_inventory:
-	echo "[local]\nlocalhost ansible_connection=local" >> ./.vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory
-
 template_setup:
+	echo "[local]\nlocalhost ansible_connection=local" >> ./.vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory
 	export ANSIBLE_HOST_KEY_CHECKING=false && \
 	ansible-playbook -c local template_setup.yml \
 	-i ./.vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory 

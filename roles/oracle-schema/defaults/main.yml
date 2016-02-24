@@ -1,5 +1,6 @@
 ---
-  
+
   oracle_system_pwd: sysadm
   schema_name: scott
   schema_password: tiger
+  schema_dump: ''

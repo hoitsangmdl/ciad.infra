@@ -12,6 +12,17 @@
     template: src=schema.sql.j2 dest=/tmp/{{ schema_name }}_user.sql owner=oracle group=dba mode=0500
     register: test_schema_sql_script
 
+  - name: copy oracle datadump sql script
+    template: src=datadump.sql.j2 dest=/tmp/{{ schema_name }}_datadump.sql owner=oracle group=dba mode=0500
+    register: test_datadump_sql_script
+
+  - name: copy datadump if specified
+    copy:
+      src={{schema_dump}}.dmp
+      dest=/tmp/{{schema_dump}}.dmp
+      owner=oracle
+    when: schema_dump|default("") != ""
+
 
   - name: create tablespace
     shell: >
@@ -33,3 +44,17 @@
         sqlplus sys/{{ oracle_system_pwd }} as sysdba < /tmp/{{ schema_name }}_user.sql
     sudo_user: oracle
     when: test_schema_sql_script|changed
+
+  - name: create datadump directory
+    shell: >
+      source ~oracle/.bashrc && \
+        sqlplus sys/{{ oracle_system_pwd }} as sysdba < /tmp/{{ schema_name }}_datadump.sql
+    sudo_user: oracle
+    when: test_datadump_sql_script|changed
+
+  - name: load schema datadump
+    shell: >
+      source ~oracle/.bashrc && \
+      impdp {{schema_name}}/password schemas={{schema_name}} directory={{schema_name}}_datadump dumpfile={{schema_name}}.dmp TABLE_EXISTS_ACTION=REPLACE
+    sudo_user: root
+    when: schema_dump|default("") != ""
