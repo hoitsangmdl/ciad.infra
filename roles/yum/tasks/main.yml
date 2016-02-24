@@ -62,6 +62,7 @@
       mode=0644
       enabled=yes
       gpgcheck=no
+      timeout=999
     with_items: "{{artifactory_repos|selectattr('repo_type','equalto','yum')|list}}"
     when: artifactory_up
     tags: local_repo
