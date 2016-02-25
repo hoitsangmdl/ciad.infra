@@ -64,7 +64,7 @@ Last, some of the playbook require API interaction from local machine to the VM.
 
 **Notes**
 
-Run the following comamnd to skip step 2 to 6:
+Run the following comamnd to skip step 2 to 5:
 
     make reload
 
