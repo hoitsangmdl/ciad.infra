@@ -61,6 +61,14 @@ Last, some of the playbook require API interaction from local machine to the VM.
     192.168.100.18   nagios
     192.168.100.50   tomcat
 
+
+**Notes**
+
+Run the following comamnd to skip step 2 to 6:
+
+    make reload
+
+
 2. Start up Toolchain
 -----------
 
