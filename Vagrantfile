@@ -9,8 +9,8 @@ Vagrant.configure("2") do |config|
 
   config.vm.define "oracle" do |v|
     v.vm.host_name = "oracle"
-    v.vm.network "private_network", ip: "192.168.100.12"
-    v.vm.network "private_network", ip: "192.168.100.13"
+    v.vm.network "private_network", ip: "192.168.101.12"
+    v.vm.network "private_network", ip: "192.168.101.13"
     config.vm.provider :virtualbox do |vb|
       vb.customize ["modifyvm", :id, "--memory", "4096"]
     end
@@ -22,8 +22,8 @@ Vagrant.configure("2") do |config|
 
   config.vm.define "jira" do |v|
     v.vm.host_name = "jira"
-    v.vm.network "private_network", ip: "192.168.100.14"
-    v.vm.network "private_network", ip: "192.168.100.15"
+    v.vm.network "private_network", ip: "192.168.101.14"
+    v.vm.network "private_network", ip: "192.168.101.15"
     config.vm.provider :virtualbox do |vb|
       vb.customize ["modifyvm", :id, "--memory", "4096"]
     end
@@ -35,7 +35,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.define "jenkins" do |v|
     v.vm.host_name = "jenkins"
-    v.vm.network "private_network", ip: "192.168.100.16"
+    v.vm.network "private_network", ip: "192.168.101.16"
     v.vm.provider :virtualbox do |vb|
       vb.customize ["modifyvm", :id, "--memory", "1024"]
     end
@@ -47,8 +47,8 @@ Vagrant.configure("2") do |config|
 
   config.vm.define "elk" do |v|
     v.vm.host_name = "elk"
-    v.vm.network "private_network", ip: "192.168.100.17"
-    v.vm.network "private_network", ip: "192.168.100.18"
+    v.vm.network "private_network", ip: "192.168.101.17"
+    v.vm.network "private_network", ip: "192.168.101.18"
     v.vm.provider :virtualbox do |vb|
       vb.customize ["modifyvm", :id, "--memory", "3072"]
     end

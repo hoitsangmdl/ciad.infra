@@ -27,14 +27,15 @@ template_setup:
 	echo "[local]\nlocalhost ansible_connection=local" >> ./.vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory && \
 	export ANSIBLE_HOST_KEY_CHECKING=false && \
 	ansible-playbook -c local template.yml \
-	-i ./.vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory 
+	-i ./.vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory -vvvv
 
 project_setup:
+	echo "[local]\nlocalhost ansible_connection=local" >> ./.vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory && \
 	. env/bin/activate && \
 	export ANSIBLE_HOST_KEY_CHECKING=false && \
 	ansible-playbook -c local project.yml \
 	-i ./.vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory \
-	-e "project_key='$(PROJECT_KEY)' project_name='$(PROJECT_SLUG)'" 
+	-e "project_key='$(PROJECT_KEY)' project_name='$(PROJECT_SLUG)'" -vvvv
 
 up:
 	. env/bin/activate && vagrant up oracle elk jenkins jira
